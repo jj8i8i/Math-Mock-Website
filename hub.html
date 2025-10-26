@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Hub</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body id="hub-page">
+    <div class="header-bar">
+        <div class="user-info">
+            <span data-lang-key="welcome">ยินดีต้อนรับ,</span> <span id="hub-username">User</span>
+        </div>
+        <div class="header-controls">
+            <button id="lang-toggle" class="lang-toggle">EN/TH</button>
+            <button id="logout-button" class="button-secondary" data-lang-key="logout">ออกจากระบบ</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1 data-lang-key="test_selection">เลือกชุดข้อสอบ</h1>
+        <div id="test-list-container">
+            </div>
+    </div>
+    
+    <script src="data.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
