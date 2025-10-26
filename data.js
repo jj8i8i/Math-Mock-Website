@@ -40,7 +40,9 @@ const I18N_DB = {
         'correct_status': 'ถูกต้อง',
         'incorrect_status': 'ผิด',
         'no_attempt': 'ยังไม่ได้ทำข้อสอบ',
-        'no_attempt_desc': 'คุณยังไม่ได้ทำข้อสอบชุดนี้ หรือ ออกจากหน้าระหว่างทำข้อสอบ'
+        'no_attempt_desc': 'คุณยังไม่ได้ทำข้อสอบชุดนี้ หรือ ออกจากหน้าระหว่างทำข้อสอบ',
+        // [เพิ่ม] Key ใหม่สำหรับ Placeholder
+        'answer_format_placeholder': 'กรอกคำตอบของคุณ (เช่น 3, 3/2, No such polynomial)'
     },
     'en': {
         'login_title': 'Login',
@@ -72,11 +74,13 @@ const I18N_DB = {
         'correct_status': 'Correct',
         'incorrect_status': 'Incorrect',
         'no_attempt': 'No Attempt Found',
-        'no_attempt_desc': 'You have not attempted this test set, or you left mid-test.'
+        'no_attempt_desc': 'You have not attempted this test set, or you left mid-test.',
+        // [เพิ่ม] Key ใหม่สำหรับ Placeholder
+        'answer_format_placeholder': 'Enter your answer (e.g., 3, 3/2, No such polynomial)'
     }
 };
 
-// Database ข้อสอบ
+// Database ข้อสอบ (เวอร์ชันแก้บั๊ก \ และ ความยาก Medium)
 const TEST_DATA = {
     'algebra_set_1': {
         id: 'algebra_set_1',
@@ -84,11 +88,9 @@ const TEST_DATA = {
         meta: {
             questions: 10,
             time: 90, // นาที
-            // [แก้ไข] เปลี่ยนความยากเป็น Medium
-            difficulty: { 'en': 'Medium', 'th': 'ปานกลาง' }
+            difficulty: { 'en': 'Medium', 'th': 'ปานกลาง' } // แก้ไขความยาก
         },
         questions: [
-            // [แก้ไข] เอาเลข 1. 2. 3. ออกจาก solution ทั้งหมด
             // ข้อ 1
             {
                 q: { 
@@ -100,7 +102,7 @@ const TEST_DATA = {
                     'en': 'Try substituting $x=0$ to find $f(0)$. Then, try $y=0$ to see the relation for $f(x^2)$'
                 },
                 answer: '-1',
-                solution: {
+                solution: { // [แก้ไข] เอาเลข 1. 2. ออก
                     'th': '**หา $f(0)$:** แทน $x=0$ $\\implies f(y) = f(0)^2 + f(y) \\implies f(0)^2 = 0 \\implies f(0) = 0$\n**หา $f(x^2)$:** แทน $y=0$ $\\implies f(x^2) = f(x)^2 + f(0) = f(x)^2$ ดังนั้น $f(x^2) = f(x)^2$\n**สร้างสมการ Cauchy:** จาก $f(x^2 + y) = f(x)^2 + f(y)$ และ $f(x^2) = f(x)^2$ $\\implies f(x^2 + y) = f(x^2) + f(y)$ ให้ $u = x^2$ (ซึ่ง $u$ เป็นกำลังสองของจำนวนตรรกยะบวก) $\\implies f(u+y) = f(u) + f(y)$ สำหรับ $u \\ge 0$ ที่เป็นกำลังสอง\n**พิสูจน์ $f(x)=x$:** $f(1) = f(1^2) = f(1)^2 \\implies f(1) = 0$ หรือ $f(1) = 1$ $f(2) = f(1^2+1) = f(1)^2+f(1) = f(1)+f(1) = 2f(1)$ โจทย์ให้ $f(2)=2$ ดังนั้น $2 = 2f(1) \\implies f(1)=1$ โดยอุปนัย $f(n) = n$ สำหรับ $n \\in \\mathbb{N}$ และ $f(x)=x$ สำหรับ $x \\in \\mathbb{Q}, x \\ge 0$\n**หา $f(-1)$:** เรามี $f(1+y) = f(1^2+y) = f(1)^2 + f(y) = 1 + f(y)$ ซึ่งจริงสำหรับทุก $y \\in \\mathbb{Q}$ แทน $y = -1$: $f(1 + (-1)) = 1 + f(-1)$ $\\implies f(0) = 1 + f(-1)$ เนื่องจาก $f(0)=0$ $\\implies 0 = 1 + f(-1) \\implies f(-1) = -1$',
                     'en': '**Find $f(0)$:** Let $x=0$ $\\implies f(y) = f(0)^2 + f(y) \\implies f(0)^2 = 0 \\implies f(0) = 0$\n**Find $f(x^2)$:** Let $y=0$ $\\implies f(x^2) = f(x)^2 + f(0) = f(x)^2$\n**Cauchy Eq:** From $f(x^2 + y) = f(x)^2 + f(y)$ and $f(x^2) = f(x)^2$ $\\implies f(x^2 + y) = f(x^2) + f(y)$. Let $u = x^2$ (a square of a rational) $\\implies f(u+y) = f(u) + f(y)$ for $u$ being a square.\n**Prove $f(x)=x$:** $f(1) = f(1^2) = f(1)^2 \\implies f(1) = 0$ or $f(1) = 1$. $f(2) = f(1^2+1) = f(1)^2+f(1) = f(1)+f(1) = 2f(1)$. Given $f(2)=2$, $2 = 2f(1) \\implies f(1)=1$. By induction, $f(n)=n$ for $n \\in \\mathbb{N}$ and $f(x)=x$ for $x \\in \\mathbb{Q}, x \\ge 0$\n**Find $f(-1)$:** We have $f(1+y) = f(1^2+y) = f(1)^2 + f(y) = 1 + f(y)$ for all $y \\in \\mathbb{Q}$. Let $y = -1$: $f(1 + (-1)) = 1 + f(-1)$ $\\implies f(0) = 1 + f(-1)$. Since $f(0)=0$ $\\implies 0 = 1 + f(-1) \\implies f(-1) = -1$'
                 }
@@ -115,7 +117,7 @@ const TEST_DATA = {
                     'th': 'ถ้า $P(n_0) = 0$ จะเกิดอะไรขึ้น? ถ้า $P(x)$ ไม่คงตัว, $|P(n)|$ จะโตเร็วแค่ไหน? แล้ว $P(n)$ จะมีค่าเป็นอะไรได้บ้าง?',
                     'en': 'What happens if $P(n_0) = 0$? If $P(x)$ is non-constant, how fast does $|P(n)|$ grow? What values can $P(n)$ take?'
                 },
-                answer: '-',
+                answer: 'No such polynomial',
                 solution: {
                     'th': '$P(n) \\ne 0$ สำหรับ $n \\in \\mathbb{N}$ เพราะ $P(n) \\mid 2^n-1$ และ $2^n-1 \\ne 0$\nให้ $m = P(n)$ เรามี $m \\mid 2^n-1$ $\\implies 2^n \\equiv 1 \\pmod m$\nพิจารณา $P(n + k \\cdot m)$ โดย $k \\in \\mathbb{Z}$ $\\implies P(n+km) \\equiv P(n) \\equiv m \\equiv 0 \\pmod m$ ดังนั้น $m \\mid P(n+km)$ \nจากโจทย์, $P(n+km) \\mid 2^{n+km} - 1$\nดังนั้น $m \\mid 2^{n+km} - 1$ $\\implies m \\mid (2^n)(2^m)^k - 1$ $\\implies m \\mid (1)(2^m)^k - 1 \\pmod m$ (เพราะ $2^n \\equiv 1 \\pmod m$) $\\implies m \\mid (2^m)^k - 1$ สำหรับทุก $k$ โดยเฉพาะ $k=1$, $m \\mid 2^m - 1$\nเราจึงได้ว่า $P(n) \\mid 2^{P(n)} - 1$ สำหรับทุก $n \\in \\mathbb{N}$\nจำนวนเต็ม $m$ ที่ $m \\mid 2^m - 1$ มีเพียง $m=1$ และ $m=-1$ (พิสูจน์โดยพิจารณาตัวประกอบเฉพาะที่น้อยที่สุดของ $m$ ถ้า $m \\ne \\pm 1$ จะเกิดข้อขัดแย้ง)\nดังนั้น $P(n)$ ต้องมีค่า $1$ หรือ $-1$ สำหรับทุก $n \\in \\mathbb{N}$\nพหุนาม $P(x)$ ที่รับค่า $1$ หรือ $-1$ ที่จุด $n$ อนันต์ตัว จะต้องเป็นพหุนามคงตัว (คือ $P(x) = 1$ หรือ $P(x) = -1$)\nแต่โจทย์กำหนดว่า $P(x)$ *ไม่ใช่พหุนามคงตัว* จึงเกิดข้อขัดแย้ง\nสรุป: ไม่มีพหุนามดังกล่าว',
                     'en': '$P(n) \\ne 0$ for $n \\in \\mathbb{N}$ because $P(n) \\mid 2^n-1$ and $2^n-1 \\ne 0$\nLet $m = P(n)$. We have $m \\mid 2^n-1$ $\\implies 2^n \\equiv 1 \\pmod m$\nConsider $P(n + k \\cdot m)$ for $k \\in \\mathbb{Z}$ $\\implies P(n+km) \\equiv P(n) \\equiv m \\equiv 0 \\pmod m$ so $m \\mid P(n+km)$ \nBy hypothesis, $P(n+km) \\mid 2^{n+km} - 1$\nThus $m \\mid 2^{n+km} - 1$ $\\implies m \\mid (2^n)(2^m)^k - 1$ $\\implies m \\mid (1)(2^m)^k - 1 \\pmod m$ (since $2^n \\equiv 1 \\pmod m$) $\\implies m \\mid (2^m)^k - 1$ for all $k$. For $k=1$, $m \\mid 2^m - 1$\nSo, $P(n) \\mid 2^{P(n)} - 1$ for all $n \\in \\mathbb{N}$\nThe only integers $m$ satisfying $m \\mid 2^m - 1$ are $m=1$ and $m=-1$ (Proof by smallest prime divisor).\nTherefore, $P(n)$ must be $1$ or $-1$ for all $n \\in \\mathbb{N}$\nA polynomial $P(x)$ that takes values $1$ or $-1$ at infinitely many integer points must be a constant polynomial ($P(x) = 1$ or $P(x) = -1$)\nThis contradicts the given condition that $P(x)$ is *non-constant*.\nConclusion: No such polynomial exists.'
