@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mock Test</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+</head>
+<body id="test-page">
+    <div class="header-bar test-header">
+        <h2 id="test-title">Algebra Set 1</h2>
+        <div id="timer-container">
+            <span data-lang-key="time_left">เวลาที่เหลือ:</span>
+            <span id="timer">01:30:00</span>
+        </div>
+    </div>
+
+    <div class="container test-container">
+        <form id="test-form">
+            <div id="question-container">
+                </div>
+            <button type="submit" class="button-primary submit-button" data-lang-key="submit_test">ส่งคำตอบ</button>
+        </form>
+    </div>
+
+    <div id="time-up-modal" class="modal-backdrop" style="display: none;">
+        <div class="modal-content">
+            <h2 data-lang-key="time_up">หมดเวลา!</h2>
+            <p data-lang-key="auto_submit">ระบบกำลังส่งคำตอบของคุณ...</p>
+        </div>
+    </div>
+    
+    <script src="data.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
