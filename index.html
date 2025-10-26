@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mock Test Login</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body id="login-page">
+    <div class="lang-toggle-container">
+        <button id="lang-toggle" class="lang-toggle">EN/TH</button>
+    </div>
+    <div class="container">
+        <div class="card">
+            <h1 data-lang-key="login_title">เข้าสู่ระบบ</h1>
+            <form id="login-form">
+                <div class="input-group">
+                    <label for="username" data-lang-key="username">ชื่อผู้ใช้</label>
+                    <input type="text" id="username" required>
+                </div>
+                <div class="input-group">
+                    <label for="password" data-lang-key="password">รหัสผ่าน</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit" class="button-primary" data-lang-key="login_button">ล็อกอิน</button>
+                <p id="login-error" class="error-message"></p>
+            </form>
+        </div>
+    </div>
+    <script src="data.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
