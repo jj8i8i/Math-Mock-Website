@@ -36,7 +36,7 @@ function initLangToggle() {
             // Re-render dynamic content
             const bodyId = document.body.id;
             if (bodyId === 'hub-page') renderHub();
-            if (bodyId === 'test-page') renderTest();
+            if (bodyId === 'test-page') renderTest(); // [สำคัญ] นี่คือส่วนที่ทำให้ปุ่มในหน้า test ทำงาน
             if (bodyId === 'results-page') renderResults();
         });
     }
@@ -219,18 +219,23 @@ function renderTest() {
 
     test.questions.forEach((q, index) => {
         const qNum = index + 1;
+        
+        // [แก้ไข] แปลง \n เป็น <br> เพื่อการแสดงผลที่ถูกต้อง
+        const questionText = (q.q[lang] || q.q['en']).replace(/\\n/g, '<br>');
+        const hintText = (q.hint[lang] || q.hint['en']).replace(/\\n/g, '<br>');
+
         const qBox = `
             <div class="card question-box">
                 <div class="question-header">${getI18n('question')} ${qNum}</div>
                 <div class="question-content" id="q-content-${qNum}">
-                    ${q.q[lang] || q.q['en']}
+                    ${questionText}
                 </div>
                 <div class="hint-container">
                     <button type="button" class="hint-button" data-hint-target="hint-${qNum}">
                         ${getI18n('hint')}
                     </button>
                     <div class="hint-content" id="hint-${qNum}">
-                        ${q.hint[lang] || q.hint['en']}
+                        ${hintText}
                     </div>
                 </div>
                 <label for="q-ans-${qNum}" class="input-group-label">${getI18n('your_answer')}</label>
@@ -374,6 +379,10 @@ function renderResults() {
         const statusText = isCorrect ? getI18n('correct_status') : getI18n('incorrect_status');
         const statusClass = isCorrect ? 'correct' : 'incorrect';
 
+        // [แก้ไข] แปลง \n เป็น <br> เพื่อการแสดงผลที่ถูกต้อง
+        const questionText = (q.q[lang] || q.q['en']).replace(/\\n/g, '<br>');
+        const solutionText = (q.solution[lang] || q.solution['en']).replace(/\\n/g, '<br>');
+
         const resultBox = `
             <div class="card result-box">
                 <div class="result-header">
@@ -381,7 +390,7 @@ function renderResults() {
                     <span class="result-status ${statusClass}">(${statusText})</span>
                 </div>
                 <div class="question-content" id="res-q-${qNum}">
-                    ${q.q[lang] || q.q['en']}
+                    ${questionText}
                 </div>
                 
                 <div class="result-answer">
@@ -398,7 +407,7 @@ function renderResults() {
                 <div class="solution-box">
                     <strong>${getI18n('solution')}</strong>
                     <div id="sol-${qNum}">
-                        ${q.solution[lang] || q.solution['en']}
+                        ${solutionText}
                     </div>
                 </div>
             </div>
