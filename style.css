@@ -193,14 +193,33 @@ h1, h2, h3 {
     border-radius: 12px;
     cursor: pointer;
 }
+
+/* [แก้ไข] สไตล์สำหรับ Hint ที่ใช้ Class */
 .hint-content {
     background-color: #fffbe6;
     border: 1px solid #ffe58f;
     border-radius: 8px;
     padding: 0.75rem 1rem;
     margin-top: 0.5rem;
-    display: none;
+    transition: all 0.3s ease-in-out;
+    display: block; /* Make it visible for KaTeX */
+    height: auto;
+    opacity: 1;
+    overflow: visible;
+    max-height: 500px; /* Limit max height */
 }
+
+.hint-content.hint-hidden {
+    /* Styles when hidden */
+    height: 0;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 0;
+    overflow: hidden;
+    max-height: 0;
+}
+
 .answer-input {
     width: 100%;
     max-width: 300px;
@@ -214,7 +233,7 @@ h1, h2, h3 {
     font-size: 1.25rem;
 }
 
-/* [เพิ่ม] สไตล์สำหรับ Placeholder คำตอบ */
+/* สไตล์สำหรับ Placeholder คำตอบ */
 .answer-format-label {
     display: block;
     font-size: 0.85rem;
@@ -277,16 +296,16 @@ h1, h2, h3 {
 /* KaTeX */
 .katex { font-size: 1.1em; }
 
-/* --- [แก้ไข] สไตล์สำหรับ header ในหน้า Test --- */
+/* สไตล์สำหรับ header ในหน้า Test */
 .header-controls.test-controls {
     display: flex;
     align-items: center;
     gap: 1.5rem;
 }
 
-/* --- [แก้ไข] สไตล์เพื่อให้อ่านง่ายขึ้น (แก้ wall of text) --- */
+/* สไตล์เพื่อให้อ่านง่ายขึ้น (แก้ wall of text) */
 .question-content,
-.hint-content,
+.hint-content, /* Apply to hint as well */
 .solution-box div {
     line-height: 1.9; /* เพิ่มระยะห่างระหว่างบรรทัด */
 }
