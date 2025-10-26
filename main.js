@@ -19,7 +19,7 @@ function loadLanguage() {
     
     document.querySelectorAll('[data-lang-key]').forEach(el => {
         const key = el.dataset.langKey;
-        if (I18N_DB[lang][key]) {
+        if (I18N_DB[lang] && I18N_DB[lang][key]) { // Check if key exists
             el.innerHTML = I18N_DB[lang][key];
         }
     });
@@ -48,17 +48,18 @@ function getLang() {
 
 function getI18n(key) {
     const lang = getLang();
-    return I18N_DB[lang][key] || key;
+    // Safely access nested keys
+    return (I18N_DB[lang] && I18N_DB[lang][key]) ? I18N_DB[lang][key] : key;
 }
+
 
 function getI18nContent(contentObject) {
     const lang = getLang();
-    return contentObject[lang] || contentObject['en'];
+    return contentObject[lang] || contentObject['en']; // Fallback to English
 }
 
 // --- KaTeX Auto-render ---
 function initGlobalRender() {
-    // Call KaTeX auto-render if it's loaded
     if (window.renderMathInElement) {
         renderMathInElement(document.body, {
             delimiters: [
@@ -66,12 +67,13 @@ function initGlobalRender() {
                 {left: '$', right: '$', display: false},
                 {left: '\\(', right: '\\)', display: false},
                 {left: '\\[', right: '\\]', display: true}
-            ]
+            ],
+            throwOnError: false // Prevent errors from stopping script
         });
     }
 }
 
-// [แก้ไข] ฟังก์ชันสำหรับ Render KaTeX เฉพาะจุด
+// Function to render math in a specific element
 function renderMath(element) {
     if (window.renderMathInElement) {
         renderMathInElement(element, {
@@ -80,7 +82,8 @@ function renderMath(element) {
                 {left: '$', right: '$', display: false},
                 {left: '\\(', right: '\\)', display: false},
                 {left: '\\[', right: '\\]', display: true}
-            ]
+            ],
+            throwOnError: false // Prevent errors from stopping script
         });
     }
 }
@@ -89,7 +92,7 @@ function renderMath(element) {
 // --- Login Page (index.html) ---
 function initLogin() {
     if (localStorage.getItem('loggedInUser')) {
-        window.location.href = 'hub.html'; // Already logged in
+        window.location.href = 'hub.html'; 
     }
 
     const form = document.getElementById('login-form');
@@ -122,7 +125,7 @@ function initHub() {
 
 function renderHub() {
     const container = document.getElementById('test-list-container');
-    container.innerHTML = ''; // Clear existing
+    container.innerHTML = ''; 
     const user = localStorage.getItem('loggedInUser');
     const isUnlimited = localStorage.getItem('isUnlimited') === 'true';
 
@@ -162,7 +165,6 @@ function renderHub() {
         container.innerHTML += card;
     });
 
-    // Add event listeners
     container.querySelectorAll('button').forEach(button => {
         button.addEventListener('click', () => {
             const testId = button.dataset.testid;
@@ -232,7 +234,11 @@ function renderTest() {
         const qNum = index + 1;
         
         const questionText = (q.q[lang] || q.q['en']).replace(/\n/g, '<br>');
-        const hintText = (q.hint[lang] || q.hint['en']).replace(/\n/g, '<br>');
+        // Store hint text separately, don't replace \n yet for KaTeX processing
+        const hintTextRaw = (q.hint[lang] || q.hint['en']); 
+        // Replace \n for display after KaTeX
+        const hintTextDisplay = hintTextRaw.replace(/\n/g, '<br>');
+
 
         const qBox = `
             <div class="card question-box">
@@ -245,7 +251,7 @@ function renderTest() {
                         ${getI18n('hint')}
                     </button>
                     <div class="hint-content" id="hint-${qNum}">
-                        ${hintText}
+                         ${hintTextDisplay} 
                     </div>
                 </div>
                 <label for="q-ans-${qNum}" class="input-group-label">${getI18n('your_answer')}</label>
@@ -256,25 +262,29 @@ function renderTest() {
         container.innerHTML += qBox;
     });
 
-    // Render Math สำหรับคำถาม
+    // Render Math for questions initially
     renderMath(container);
 
-    // [แก้ไข] เพิ่ม Event Listener สำหรับ Hint
+    // [แก้ไข] Event Listener สำหรับ Hint (เวอร์ชันใหม่)
     container.querySelectorAll('.hint-button').forEach(button => {
         button.addEventListener('click', () => {
             const targetId = button.dataset.hintTarget;
             const hintContent = document.getElementById(targetId);
-            
-            // Render KaTeX ใน Hint เฉพาะตอนกดครั้งแรก
-            if (!hintContent.dataset.rendered) {
+            const isHidden = hintContent.style.display === 'none' || hintContent.style.display === '';
+
+            if (isHidden) {
+                // First, make it visible
+                hintContent.style.display = 'block';
+                // Then, render math inside it (re-render every time for robustness)
                 renderMath(hintContent);
-                hintContent.dataset.rendered = 'true';
+            } else {
+                // If it's visible, just hide it
+                hintContent.style.display = 'none';
             }
-            
-            hintContent.style.display = hintContent.style.display === 'block' ? 'none' : 'block';
         });
     });
 }
+
 
 function startTimer(durationMinutes, startTime, testId, user) {
     const timerEl = document.getElementById('timer');
@@ -429,7 +439,7 @@ function renderResults() {
         container.innerHTML += resultBox;
     });
 
-    // Render Math สำหรับหน้าผลลัพธ์
+    // Render Math for results page
     renderMath(container);
 }
 
