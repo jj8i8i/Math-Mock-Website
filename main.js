@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Global setup
     loadLanguage();
     initLangToggle();
-    // Don't call initGlobalRender here initially for body
 
     // Page-specific setup
     const bodyId = document.body.id;
@@ -58,9 +57,8 @@ function getI18nContent(contentObject) {
 }
 
 // --- KaTeX Auto-render ---
-// Function to render math in a specific element (used for dynamic content)
+// Function to render math in a specific element
 function renderMath(element) {
-    // Ensure KaTeX is loaded before trying to render
     if (window.renderMathInElement) {
         try {
             renderMathInElement(element, {
@@ -70,7 +68,7 @@ function renderMath(element) {
                     {left: '\\(', right: '\\)', display: false},
                     {left: '\\[', right: '\\]', display: true}
                 ],
-                throwOnError: false // Don't stop execution on render error
+                throwOnError: false
             });
         } catch (error) {
             console.error("KaTeX rendering error:", error);
@@ -102,7 +100,7 @@ function initLogin() {
             errorMsg.textContent = getI18n('login_error');
         }
     });
-    renderMath(document.body);
+    renderMath(document.body); // Render static math if any
 }
 
 // --- Hub Page (hub.html) ---
@@ -114,7 +112,7 @@ function initHub() {
         window.location.href = 'index.html';
     });
     renderHub();
-    renderMath(document.body);
+    renderMath(document.body); // Render static math if any
 }
 
 function renderHub() {
@@ -230,7 +228,7 @@ function renderTest() {
         const questionText = (q.q[lang] || q.q['en']).replace(/\n/g, '<br>');
         const hintTextDisplay = (q.hint[lang] || q.hint['en']).replace(/\n/g, '<br>');
 
-        // [แก้ไข] เพิ่ม class 'hint-hidden' เริ่มต้น
+        // ใช้ display: none; เหมือนเดิม
         const qBox = `
             <div class="card question-box">
                 <div class="question-header">${getI18n('question')} ${qNum}</div>
@@ -241,7 +239,7 @@ function renderTest() {
                     <button type="button" class="hint-button" data-hint-target="hint-${qNum}">
                         ${getI18n('hint')}
                     </button>
-                    <div class="hint-content hint-hidden" id="hint-${qNum}"> ${hintTextDisplay}
+                    <div class="hint-content" id="hint-${qNum}" style="display: none;"> ${hintTextDisplay}
                     </div>
                 </div>
                 <label for="q-ans-${qNum}" class="input-group-label">${getI18n('your_answer')}</label>
@@ -252,17 +250,28 @@ function renderTest() {
         container.innerHTML += qBox;
     });
 
-    // Render Math ทั้งหมดหลังจากสร้าง HTML (รวมถึง Hint ที่ซ่อนอยู่)
-    renderMath(container);
+    // Render Math สำหรับคำถามก่อน
+    container.querySelectorAll('.question-content').forEach(el => renderMath(el));
 
-    // [แก้ไข] Event Listener สำหรับ Hint (เวอร์ชัน 5 - ใช้ class toggle)
+    // [แก้ไข] Event Listener สำหรับ Hint (เวอร์ชัน 6 - ใช้ display + setTimeout)
     container.querySelectorAll('.hint-button').forEach(button => {
         button.addEventListener('click', () => {
             const targetId = button.dataset.hintTarget;
             const hintContent = document.getElementById(targetId);
-            // สลับ class 'hint-hidden'
-            hintContent.classList.toggle('hint-hidden');
-            // ไม่ต้องเรียก renderMath ซ้ำ เพราะมัน Render ไปแล้วตอนแรก
+            const isHidden = hintContent.style.display === 'none';
+
+            if (isHidden) {
+                // ทำให้มองเห็นก่อน
+                hintContent.style.display = 'block';
+                 // หน่วงเวลาเล็กน้อย (0ms) แล้วค่อย Render Math
+                 // เพื่อให้แน่ใจว่า DOM update เสร็จก่อน KaTeX ทำงาน
+                setTimeout(() => {
+                    renderMath(hintContent);
+                }, 0); // 0ms delay might be enough
+            } else {
+                // ซ่อน
+                hintContent.style.display = 'none';
+            }
         });
     });
 }
@@ -367,7 +376,7 @@ function renderResults() {
     if (!resultsData) {
         document.getElementById('score-display').textContent = `0 / ${test.meta.questions}`;
         document.getElementById('no-results-message').style.display = 'block';
-        renderMath(document.body); // Render general math if any
+        renderMath(document.body); // Render static math if any
         return;
     }
 
