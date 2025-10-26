@@ -1,4 +1,4 @@
-Document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
     // Global setup
     loadLanguage();
     initLangToggle();
@@ -76,18 +76,6 @@ function initGlobalRender() {
 // Function to render math in a specific element
 function renderMath(element) {
     if (window.renderMathInElement) {
-        // [สำคัญ]: ก่อนเรียก renderMath, ต้องแปลง \n เป็น <br> ก่อนเพื่อให้ข้อความหลายบรรทัดถูกต้อง
-        // เราใช้ .innerHTML เพื่ออัพเดทข้อความดิบที่มี \n อยู่ใน KaTeX/MathJax แล้ว
-        // KaTeX จะจัดการกับข้อความที่เป็น HTML โดยตรง ดังนั้นการแปลงนี้ต้องทำก่อน
-        // แต่ถ้า MathJax/KaTeX มีปัญหาในการประมวลผลการขึ้นบรรทัดด้วย \n ภายใน String
-        // วิธีที่ปลอดภัยที่สุดคือการแปลง \n เป็น <br> ในส่วนที่ไม่ใช่สมการ
-        // แต่สำหรับ solution/hint ที่เป็นสมการทั้งหมด เราจะใช้การแสดงผล MathJax/KaTeX
-        // ซึ่งโดยปกติแล้ว MathJax/KaTeX ควรจะจัดการกับ \n ได้ใน display:true mode
-
-        // วิธีที่ปลอดภัย: ให้ฟังก์ชันนี้จัดการการแปลง \n เป็น <br> ที่ไม่ได้อยู่ในสมการ $...$ หรือ $$...$$ 
-        // อย่างไรก็ตามในโค้ดนี้ เราจะใช้การแปลง \n เป็น <br> ที่จุดดึงข้อมูลโดยตรง 
-        // เนื่องจากเนื้อหาของเราส่วนใหญ่เป็นสมการ MathJax/KaTeX จะจัดการการจัดเรียงได้เอง
-        // (ยกเว้นในส่วนที่ไม่ใช่สมการจริงๆ)
         renderMathInElement(element, {
             delimiters: [
                 {left: '$$', right: '$$', display: true},
@@ -245,14 +233,13 @@ function renderTest() {
     test.questions.forEach((q, index) => {
         const qNum = index + 1;
         
-        // [แก้ไข 1]: Question Text - ยังคงแปลง \n เป็น <br> เพื่อแสดงผลข้อความที่ไม่ใช่สมการ
         const questionText = (q.q[lang] || q.q['en']).replace(/\n/g, '<br>');
-        
-        // [แก้ไข 2]: Hint Text - ดึงข้อความดิบมาทั้งหมด ไม่มีการแปลง \n เป็น <br> ณ จุดนี้
-        // การแปลงและ render จะเกิดขึ้นเมื่อผู้ใช้คลิกปุ่ม hint
+        // Store hint text separately, don't replace \n yet for KaTeX processing
         const hintTextRaw = (q.hint[lang] || q.hint['en']); 
-        
-        // ข้อความดิบจะถูกนำไปใส่ใน DOM
+        // Replace \n for display after KaTeX
+        const hintTextDisplay = hintTextRaw.replace(/\n/g, '<br>');
+
+
         const qBox = `
             <div class="card question-box">
                 <div class="question-header">${getI18n('question')} ${qNum}</div>
@@ -263,8 +250,8 @@ function renderTest() {
                     <button type="button" class="hint-button" data-hint-target="hint-${qNum}">
                         ${getI18n('hint')}
                     </button>
-                    <div class="hint-content" id="hint-${qNum}" style="display:none;">
-                         ${hintTextRaw} 
+                    <div class="hint-content" id="hint-${qNum}">
+                         ${hintTextDisplay} 
                     </div>
                 </div>
                 <label for="q-ans-${qNum}" class="input-group-label">${getI18n('your_answer')}</label>
@@ -275,11 +262,10 @@ function renderTest() {
         container.innerHTML += qBox;
     });
 
-    // Render Math สำหรับ Question Content
-    // (Hint จะถูก render เมื่อมีการคลิก)
-    container.querySelectorAll('.question-content').forEach(renderMath);
+    // Render Math for questions initially
+    renderMath(container);
 
-    // [แก้ไข 3]: Event Listener สำหรับ Hint - ปรับปรุงการจัดการแสดงผลและ Render Math
+    // [แก้ไข] Event Listener สำหรับ Hint (เวอร์ชันใหม่)
     container.querySelectorAll('.hint-button').forEach(button => {
         button.addEventListener('click', () => {
             const targetId = button.dataset.hintTarget;
@@ -289,8 +275,8 @@ function renderTest() {
             if (isHidden) {
                 // First, make it visible
                 hintContent.style.display = 'block';
-                // Then, render math inside it (KaTeX/MathJax จะจัดการ \n ให้เอง)
-                renderMath(hintContent); 
+                // Then, render math inside it (re-render every time for robustness)
+                renderMath(hintContent);
             } else {
                 // If it's visible, just hide it
                 hintContent.style.display = 'none';
@@ -418,12 +404,8 @@ function renderResults() {
         const statusText = isCorrect ? getI18n('correct_status') : getI18n('incorrect_status');
         const statusClass = isCorrect ? 'correct' : 'incorrect';
 
-        // [แก้ไข 4]: Question Text - ยังคงแปลง \n เป็น <br> 
         const questionText = (q.q[lang] || q.q['en']).replace(/\n/g, '<br>');
-        
-        // [แก้ไข 5]: Solution Text - ดึงข้อความดิบมาทั้งหมด ไม่มีการแปลง \n เป็น <br> 
-        // ให้ MathJax/KaTeX จัดการกับข้อความที่มี \n (สำหรับสมการที่ยาวหลายบรรทัด)
-        const solutionTextRaw = (q.solution[lang] || q.solution['en']);
+        const solutionText = (q.solution[lang] || q.solution['en']).replace(/\n/g, '<br>');
 
         const resultBox = `
             <div class="card result-box">
@@ -449,7 +431,7 @@ function renderResults() {
                 <div class="solution-box">
                     <strong>${getI18n('solution')}</strong>
                     <div id="sol-${qNum}">
-                        ${solutionTextRaw}
+                        ${solutionText}
                     </div>
                 </div>
             </div>
@@ -457,7 +439,7 @@ function renderResults() {
         container.innerHTML += resultBox;
     });
 
-    // Render Math for all content in results container
+    // Render Math for results page
     renderMath(container);
 }
 
