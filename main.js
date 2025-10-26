@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Global setup
     loadLanguage();
     initLangToggle();
-    initGlobalRender(); // This will run on static content first
+    // [แก้ไข] ไม่ต้องเรียก initGlobalRender() ที่นี่แล้ว
 
     // Page-specific setup
     const bodyId = document.body.id;
@@ -16,10 +16,10 @@ document.addEventListener('DOMContentLoaded', () => {
 function loadLanguage() {
     const lang = localStorage.getItem('language') || 'th';
     document.documentElement.lang = lang;
-    
+
     document.querySelectorAll('[data-lang-key]').forEach(el => {
         const key = el.dataset.langKey;
-        if (I18N_DB[lang] && I18N_DB[lang][key]) { // Check if key exists
+        if (I18N_DB[lang] && I18N_DB[lang][key]) {
             el.innerHTML = I18N_DB[lang][key];
         }
     });
@@ -35,8 +35,8 @@ function initLangToggle() {
             loadLanguage();
             // Re-render dynamic content
             const bodyId = document.body.id;
-            if (bodyId === 'hub-page') renderHub(); 
-            if (bodyId === 'test-page') renderTest(); 
+            if (bodyId === 'hub-page') renderHub();
+            if (bodyId === 'test-page') renderTest();
             if (bodyId === 'results-page') renderResults();
         });
     }
@@ -48,18 +48,19 @@ function getLang() {
 
 function getI18n(key) {
     const lang = getLang();
-    // Safely access nested keys
     return (I18N_DB[lang] && I18N_DB[lang][key]) ? I18N_DB[lang][key] : key;
 }
 
 
 function getI18nContent(contentObject) {
     const lang = getLang();
-    return contentObject[lang] || contentObject['en']; // Fallback to English
+    return contentObject[lang] || contentObject['en'];
 }
 
 // --- KaTeX Auto-render ---
 function initGlobalRender() {
+    // This function now just renders math on the whole body
+    // Useful for initial load and page changes where dynamic content isn't the main focus
     if (window.renderMathInElement) {
         renderMathInElement(document.body, {
             delimiters: [
@@ -68,12 +69,12 @@ function initGlobalRender() {
                 {left: '\\(', right: '\\)', display: false},
                 {left: '\\[', right: '\\]', display: true}
             ],
-            throwOnError: false // Prevent errors from stopping script
+            throwOnError: false
         });
     }
 }
 
-// Function to render math in a specific element
+// Function to render math in a specific element (used for dynamic content)
 function renderMath(element) {
     if (window.renderMathInElement) {
         renderMathInElement(element, {
@@ -83,7 +84,7 @@ function renderMath(element) {
                 {left: '\\(', right: '\\)', display: false},
                 {left: '\\[', right: '\\]', display: true}
             ],
-            throwOnError: false // Prevent errors from stopping script
+            throwOnError: false
         });
     }
 }
@@ -92,7 +93,7 @@ function renderMath(element) {
 // --- Login Page (index.html) ---
 function initLogin() {
     if (localStorage.getItem('loggedInUser')) {
-        window.location.href = 'hub.html'; 
+        window.location.href = 'hub.html';
     }
 
     const form = document.getElementById('login-form');
@@ -110,6 +111,8 @@ function initLogin() {
             errorMsg.textContent = getI18n('login_error');
         }
     });
+    // Call initial render for login page if needed (usually not needed)
+    initGlobalRender();
 }
 
 // --- Hub Page (hub.html) ---
@@ -121,11 +124,13 @@ function initHub() {
         window.location.href = 'index.html';
     });
     renderHub();
+    // Call initial render for hub page
+    initGlobalRender();
 }
 
 function renderHub() {
     const container = document.getElementById('test-list-container');
-    container.innerHTML = ''; 
+    container.innerHTML = '';
     const user = localStorage.getItem('loggedInUser');
     const isUnlimited = localStorage.getItem('isUnlimited') === 'true';
 
@@ -183,14 +188,14 @@ function renderHub() {
 function startTest(testId, user) {
     const isUnlimited = localStorage.getItem('isUnlimited') === 'true';
     const attemptKey = `attempt_${user}_${testId}`;
-    
+
     if (!isUnlimited) {
         localStorage.setItem(attemptKey, 'true');
     }
 
     localStorage.setItem(`testStartTime_${testId}`, Date.now());
     localStorage.removeItem(`results_${user}_${testId}`);
-    
+
     window.location.href = 'test.html';
 }
 
@@ -214,7 +219,7 @@ function initTest() {
     }
 
     document.getElementById('test-title').textContent = getI18nContent(test.title);
-    renderTest();
+    renderTest(); // Render content first
     startTimer(test.meta.time, startTime, testId, user);
 
     document.getElementById('test-form').addEventListener('submit', e => {
@@ -232,12 +237,9 @@ function renderTest() {
 
     test.questions.forEach((q, index) => {
         const qNum = index + 1;
-        
+
         const questionText = (q.q[lang] || q.q['en']).replace(/\n/g, '<br>');
-        // Store hint text separately, don't replace \n yet for KaTeX processing
-        const hintTextRaw = (q.hint[lang] || q.hint['en']); 
-        // Replace \n for display after KaTeX
-        const hintTextDisplay = hintTextRaw.replace(/\n/g, '<br>');
+        const hintTextDisplay = (q.hint[lang] || q.hint['en']).replace(/\n/g, '<br>');
 
 
         const qBox = `
@@ -250,8 +252,7 @@ function renderTest() {
                     <button type="button" class="hint-button" data-hint-target="hint-${qNum}">
                         ${getI18n('hint')}
                     </button>
-                    <div class="hint-content" id="hint-${qNum}">
-                         ${hintTextDisplay} 
+                    <div class="hint-content" id="hint-${qNum}" style="display: none;"> ${hintTextDisplay}
                     </div>
                 </div>
                 <label for="q-ans-${qNum}" class="input-group-label">${getI18n('your_answer')}</label>
@@ -262,23 +263,21 @@ function renderTest() {
         container.innerHTML += qBox;
     });
 
-    // Render Math for questions initially
+    // [แก้ไข] เรียก Render Math หลังจากสร้าง HTML เสร็จ
     renderMath(container);
 
-    // [แก้ไข] Event Listener สำหรับ Hint (เวอร์ชันใหม่)
+    // [แก้ไข] Event Listener สำหรับ Hint (เวอร์ชัน 3)
     container.querySelectorAll('.hint-button').forEach(button => {
         button.addEventListener('click', () => {
             const targetId = button.dataset.hintTarget;
             const hintContent = document.getElementById(targetId);
-            const isHidden = hintContent.style.display === 'none' || hintContent.style.display === '';
+            const isHidden = hintContent.style.display === 'none';
 
             if (isHidden) {
-                // First, make it visible
                 hintContent.style.display = 'block';
-                // Then, render math inside it (re-render every time for robustness)
+                // Re-render math inside the specific hint *after* it's displayed
                 renderMath(hintContent);
             } else {
-                // If it's visible, just hide it
                 hintContent.style.display = 'none';
             }
         });
@@ -298,11 +297,11 @@ function startTimer(durationMinutes, startTime, testId, user) {
             clearInterval(timerInterval);
             timerEl.textContent = '00:00:00';
             timerEl.classList.add('low-time');
-            submitTest(testId, user, true); 
+            submitTest(testId, user, true);
             return;
         }
 
-        if (timeLeft < 5 * 60 * 1000) { 
+        if (timeLeft < 5 * 60 * 1000) {
             timerEl.classList.add('low-time');
         }
 
@@ -310,7 +309,7 @@ function startTimer(durationMinutes, startTime, testId, user) {
         const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
-        timerEl.textContent = 
+        timerEl.textContent =
             `${String(hours).padStart(2, '0')}:` +
             `${String(minutes).padStart(2, '0')}:` +
             `${String(seconds).padStart(2, '0')}`;
@@ -349,7 +348,7 @@ function submitTest(testId, user, isAutoSubmit) {
     };
 
     localStorage.setItem(`results_${user}_${testId}`, JSON.stringify(results));
-    
+
     setTimeout(() => {
         window.location.href = 'results.html';
     }, isAutoSubmit ? 2000 : 0);
@@ -368,18 +367,18 @@ function initResults() {
         localStorage.removeItem('currentTestId');
         window.location.href = 'hub.html';
     });
-    
-    renderResults();
+
+    renderResults(); // Render content first
 }
 
 function renderResults() {
     const user = localStorage.getItem('loggedInUser');
     const testId = localStorage.getItem('currentTestId');
     const test = TEST_DATA[testId];
-    
+
     const resultsKey = `results_${user}_${testId}`;
     const resultsData = localStorage.getItem(resultsKey);
-    
+
     document.getElementById('results-title').textContent = `${getI18n('results_for')} ${getI18nContent(test.title)}`;
 
     if (!resultsData) {
@@ -387,12 +386,12 @@ function renderResults() {
         document.getElementById('no-results-message').style.display = 'block';
         return;
     }
-    
+
     document.getElementById('no-results-message').style.display = 'none';
     const results = JSON.parse(resultsData);
-    
+
     document.getElementById('score-display').textContent = `${results.score} / ${test.meta.questions}`;
-    
+
     const container = document.getElementById('results-container');
     container.innerHTML = '';
     const lang = getLang();
@@ -416,12 +415,12 @@ function renderResults() {
                 <div class="question-content" id="res-q-${qNum}">
                     ${questionText}
                 </div>
-                
+
                 <div class="result-answer">
                     <strong>${getI18n('your_answer')}</strong>
                     <span class="${statusClass}">${userAnswer || '(No Answer)'}</span>
                 </div>
-                
+
                 ${!isCorrect ? `
                 <div class="result-answer">
                     <strong>${getI18n('correct_answer')}</strong>
@@ -439,7 +438,7 @@ function renderResults() {
         container.innerHTML += resultBox;
     });
 
-    // Render Math for results page
+    // [แก้ไข] เรียก Render Math หลังจากสร้าง HTML เสร็จ
     renderMath(container);
 }
 
