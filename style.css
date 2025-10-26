@@ -214,6 +214,15 @@ h1, h2, h3 {
     font-size: 1.25rem;
 }
 
+/* [เพิ่ม] สไตล์สำหรับ Placeholder คำตอบ */
+.answer-format-label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--secondary-color);
+    margin-bottom: 0.5rem;
+    font-weight: 400;
+}
+
 /* --- Results Page --- */
 .score-card {
     text-align: center;
