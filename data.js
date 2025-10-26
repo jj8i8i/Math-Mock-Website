@@ -76,7 +76,7 @@ const I18N_DB = {
     }
 };
 
-// Database ข้อสอบ
+// Database ข้อสอบ (เวอร์ชันแก้บั๊ก \ ทั้งหมดแล้ว)
 const TEST_DATA = {
     'algebra_set_1': {
         id: 'algebra_set_1',
@@ -99,7 +99,7 @@ const TEST_DATA = {
                 },
                 answer: '-1',
                 solution: {
-                    'th': '1. **หา $f(0)$:** แทน $x=0$ $\\implies f(y) = f(0)^2 + f(y) \\implies f(0)^2 = 0 \\implies f(0) = 0$\n2. **หา $f(x^2)$:** แทน $y=0$ $\\implies f(x^2) = f(x)^2 + f(0) = f(x)^2$ ดังนั้น $f(x^2) = f(x)^2 \\ge 0$ สำหรับ $x^2$\n3. **สร้างสมการ Cauchy:** จาก $f(x^2 + y) = f(x)^2 + f(y)$ และ $f(x^2) = f(x)^2$ $\\implies f(x^2 + y) = f(x^2) + f(y)$ ให้ $u = x^2$ (ซึ่ง $u$ เป็นกำลังสองของจำนวนตรรกยะบวก) $\\implies f(u+y) = f(u) + f(y)$ สำหรับ $u \\ge 0$ ที่เป็นกำลังสอง\n4. **พิสูจน์ $f(x)=x$:** $f(1) = f(1^2) = f(1)^2 \\implies f(1) = 0$ หรือ $f(1) = 1$ $f(2) = f(1^2+1) = f(1)^2+f(1) = f(1)+f(1) = 2f(1)$ โจทย์ให้ $f(2)=2$ ดังนั้น $2 = 2f(1) \\implies f(1)=1$ โดยอุปนัย $f(n) = n$ สำหรับ $n \\in \\mathbb{N}$ และ $f(x)=x$ สำหรับ $x \\in \\mathbb{Q}, x \\ge 0$\n5. **หา $f(-1)$:** เรามี $f(1+y) = f(1^2+y) = f(1)^2 + f(y) = 1 + f(y)$ ซึ่งจริงสำหรับทุก $y \\in \\mathbb{Q}$ แทน $y = -1$: $f(1 + (-1)) = 1 + f(-1)$ $\\implies f(0) = 1 + f(-1)$ เนื่องจาก $f(0)=0$ $\\implies 0 = 1 + f(-1) \\implies f(-1) = -1$',
+                    'th': '1. **หา $f(0)$:** แทน $x=0$ $\\implies f(y) = f(0)^2 + f(y) \\implies f(0)^2 = 0 \\implies f(0) = 0$\n2. **หา $f(x^2)$:** แทน $y=0$ $\\implies f(x^2) = f(x)^2 + f(0) = f(x)^2$ ดังนั้น $f(x^2) = f(x)^2$\n3. **สร้างสมการ Cauchy:** จาก $f(x^2 + y) = f(x)^2 + f(y)$ และ $f(x^2) = f(x)^2$ $\\implies f(x^2 + y) = f(x^2) + f(y)$ ให้ $u = x^2$ (ซึ่ง $u$ เป็นกำลังสองของจำนวนตรรกยะบวก) $\\implies f(u+y) = f(u) + f(y)$ สำหรับ $u \\ge 0$ ที่เป็นกำลังสอง\n4. **พิสูจน์ $f(x)=x$:** $f(1) = f(1^2) = f(1)^2 \\implies f(1) = 0$ หรือ $f(1) = 1$ $f(2) = f(1^2+1) = f(1)^2+f(1) = f(1)+f(1) = 2f(1)$ โจทย์ให้ $f(2)=2$ ดังนั้น $2 = 2f(1) \\implies f(1)=1$ โดยอุปนัย $f(n) = n$ สำหรับ $n \\in \\mathbb{N}$ และ $f(x)=x$ สำหรับ $x \\in \\mathbb{Q}, x \\ge 0$\n5. **หา $f(-1)$:** เรามี $f(1+y) = f(1^2+y) = f(1)^2 + f(y) = 1 + f(y)$ ซึ่งจริงสำหรับทุก $y \\in \\mathbb{Q}$ แทน $y = -1$: $f(1 + (-1)) = 1 + f(-1)$ $\\implies f(0) = 1 + f(-1)$ เนื่องจาก $f(0)=0$ $\\implies 0 = 1 + f(-1) \\implies f(-1) = -1$',
                     'en': '1. **Find $f(0)$:** Let $x=0$ $\\implies f(y) = f(0)^2 + f(y) \\implies f(0)^2 = 0 \\implies f(0) = 0$\n2. **Find $f(x^2)$:** Let $y=0$ $\\implies f(x^2) = f(x)^2 + f(0) = f(x)^2$\n3. **Cauchy Eq:** From $f(x^2 + y) = f(x)^2 + f(y)$ and $f(x^2) = f(x)^2$ $\\implies f(x^2 + y) = f(x^2) + f(y)$. Let $u = x^2$ (a square of a rational) $\\implies f(u+y) = f(u) + f(y)$ for $u$ being a square.\n4. **Prove $f(x)=x$:** $f(1) = f(1^2) = f(1)^2 \\implies f(1) = 0$ or $f(1) = 1$. $f(2) = f(1^2+1) = f(1)^2+f(1) = f(1)+f(1) = 2f(1)$. Given $f(2)=2$, $2 = 2f(1) \\implies f(1)=1$. By induction, $f(n)=n$ for $n \\in \\mathbb{N}$ and $f(x)=x$ for $x \\in \\mathbb{Q}, x \\ge 0$\n5. **Find $f(-1)$:** We have $f(1+y) = f(1^2+y) = f(1)^2 + f(y) = 1 + f(y)$ for all $y \\in \\mathbb{Q}$. Let $y = -1$: $f(1 + (-1)) = 1 + f(-1)$ $\\implies f(0) = 1 + f(-1)$. Since $f(0)=0$ $\\implies 0 = 1 + f(-1) \\implies f(-1) = -1$'
                 }
             },
@@ -115,15 +115,15 @@ const TEST_DATA = {
                 },
                 answer: 'No such polynomial',
                 solution: {
-                    'th': '1. $P(n) \\ne 0$ สำหรับ $n \\in \\mathbb{N}$ เพราะ $P(n) \\mid 2^n-1$ และ $2^n-1 \\ne 0$\n2. ให้ $m = P(n)$ เรามี $m \\mid 2^n-1$ $\\implies 2^n \\equiv 1 \\pmod m$\n3. พิจารณา $P(n + k \\cdot m)$ โดย $k \\in \\mathbb{Z}$ $\\implies P(n+km) \\equiv P(n) \\equiv m \\equiv 0 \\pmod m$ ดังนั้น $m \\mid P(n+km)$ \n4. จากโจทย์, $P(n+km) \\mid 2^{n+km} - 1$\n5. ดังนั้น $m \\mid 2^{n+km} - 1$ $\\implies m \\mid (2^n)(2^m)^k - 1$ $\\implies m \\mid (1)(2^m)^k - 1 \pmod m$ (เพราะ $2^n \\equiv 1 \\pmod m$) $\\implies m \\mid (2^m)^k - 1$ สำหรับทุก $k$ โดยเฉพาะ $k=1$, $m \\mid 2^m - 1$\n6. เราจึงได้ว่า $P(n) \\mid 2^{P(n)} - 1$ สำหรับทุก $n \\in \\mathbb{N}$\n7. จำนวนเต็ม $m$ ที่ $m \\mid 2^m - 1$ มีเพียง $m=1$ และ $m=-1$ (พิสูจน์โดยพิจารณาตัวประกอบเฉพาะที่น้อยที่สุดของ $m$ ถ้า $m \\ne \\pm 1$ จะเกิดข้อขัดแย้ง)\n8. ดังนั้น $P(n)$ ต้องมีค่า $1$ หรือ $-1$ สำหรับทุก $n \\in \\mathbb{N}$\n9. พหุนาม $P(x)$ ที่รับค่า $1$ หรือ $-1$ ที่จุด $n$ อนันต์ตัว จะต้องเป็นพหุนามคงตัว (คือ $P(x) = 1$ หรือ $P(x) = -1$)\n10. แต่โจทย์กำหนดว่า $P(x)$ *ไม่ใช่พหุนามคงตัว* จึงเกิดข้อขัดแย้ง\n11. สรุป: ไม่มีพหุนามดังกล่าว',
+                    'th': '1. $P(n) \\ne 0$ สำหรับ $n \\in \\mathbb{N}$ เพราะ $P(n) \\mid 2^n-1$ และ $2^n-1 \\ne 0$\n2. ให้ $m = P(n)$ เรามี $m \\mid 2^n-1$ $\\implies 2^n \\equiv 1 \\pmod m$\n3. พิจารณา $P(n + k \\cdot m)$ โดย $k \\in \\mathbb{Z}$ $\\implies P(n+km) \\equiv P(n) \\equiv m \\equiv 0 \\pmod m$ ดังนั้น $m \\mid P(n+km)$ \n4. จากโจทย์, $P(n+km) \\mid 2^{n+km} - 1$\n5. ดังนั้น $m \\mid 2^{n+km} - 1$ $\\implies m \\mid (2^n)(2^m)^k - 1$ $\\implies m \\mid (1)(2^m)^k - 1 \\pmod m$ (เพราะ $2^n \\equiv 1 \\pmod m$) $\\implies m \\mid (2^m)^k - 1$ สำหรับทุก $k$ โดยเฉพาะ $k=1$, $m \\mid 2^m - 1$\n6. เราจึงได้ว่า $P(n) \\mid 2^{P(n)} - 1$ สำหรับทุก $n \\in \\mathbb{N}$\n7. จำนวนเต็ม $m$ ที่ $m \\mid 2^m - 1$ มีเพียง $m=1$ และ $m=-1$ (พิสูจน์โดยพิจารณาตัวประกอบเฉพาะที่น้อยที่สุดของ $m$ ถ้า $m \\ne \\pm 1$ จะเกิดข้อขัดแย้ง)\n8. ดังนั้น $P(n)$ ต้องมีค่า $1$ หรือ $-1$ สำหรับทุก $n \\in \\mathbb{N}$\n9. พหุนาม $P(x)$ ที่รับค่า $1$ หรือ $-1$ ที่จุด $n$ อนันต์ตัว จะต้องเป็นพหุนามคงตัว (คือ $P(x) = 1$ หรือ $P(x) = -1$)\n10. แต่โจทย์กำหนดว่า $P(x)$ *ไม่ใช่พหุนามคงตัว* จึงเกิดข้อขัดแย้ง\n11. สรุป: ไม่มีพหุนามดังกล่าว',
                     'en': '1. $P(n) \\ne 0$ for $n \\in \\mathbb{N}$ because $P(n) \\mid 2^n-1$ and $2^n-1 \\ne 0$\n2. Let $m = P(n)$. We have $m \\mid 2^n-1$ $\\implies 2^n \\equiv 1 \\pmod m$\n3. Consider $P(n + k \\cdot m)$ for $k \\in \\mathbb{Z}$ $\\implies P(n+km) \\equiv P(n) \\equiv m \\equiv 0 \\pmod m$ so $m \\mid P(n+km)$ \n4. By hypothesis, $P(n+km) \\mid 2^{n+km} - 1$\n5. Thus $m \\mid 2^{n+km} - 1$ $\\implies m \\mid (2^n)(2^m)^k - 1$ $\\implies m \\mid (1)(2^m)^k - 1 \\pmod m$ (since $2^n \\equiv 1 \\pmod m$) $\\implies m \\mid (2^m)^k - 1$ for all $k$. For $k=1$, $m \\mid 2^m - 1$\n6. So, $P(n) \\mid 2^{P(n)} - 1$ for all $n \\in \\mathbb{N}$\n7. The only integers $m$ satisfying $m \\mid 2^m - 1$ are $m=1$ and $m=-1$ (Proof by smallest prime divisor).\n8. Therefore, $P(n)$ must be $1$ or $-1$ for all $n \\in \\mathbb{N}$\n9. A polynomial $P(x)$ that takes values $1$ or $-1$ at infinitely many integer points must be a constant polynomial ($P(x) = 1$ or $P(x) = -1$)\n10. This contradicts the given condition that $P(x)$ is *non-constant*.\n11. Conclusion: No such polynomial exists.'
                 }
             },
             // ข้อ 3
             {
                 q: {
-                    'th': 'จงหาค่าของ $x^2+y^2+z^2$ เมื่อ $x, y, z$ เป็นจำนวนจริงที่สอดคล้องกับ $x\\sqrt{1-y^2} + y\\sqrt{1-x^2} = 1$, $y\\sqrt{1-z^2} + z\\sqrt{1-y^2} = 1$, $z\\sqrt{1-x^2} + x\\sqrt{1-z^2} = 1$',
-                    'en': 'Find $x^2+y^2+z^2$, where $x, y, z$ are real numbers satisfying $x\\sqrt{1-y^2} + y\\sqrt{1-x^2} = 1$, $y\\sqrt{1-z^2} + z\\sqrt{1-y^2} = 1$, and $z\\sqrt{1-x^2} + x\\sqrt{1-z^2} = 1$'
+                    'th': 'จงหาค่าของ $x^2+y^2+z^2$ เมื่อ $x, y, z$ เป็นจำนวนจริงที่สอดคล้องกับ $x\\sqrt{1-y^2} + y\\sqrt{1-x^2} = 1$,\n$y\\sqrt{1-z^2} + z\\sqrt{1-y^2} = 1$,\n$z\\sqrt{1-x^2} + x\\sqrt{1-z^2} = 1$',
+                    'en': 'Find $x^2+y^2+z^2$, where $x, y, z$ are real numbers satisfying $x\\sqrt{1-y^2} + y\\sqrt{1-x^2} = 1$,\n$y\\sqrt{1-z^2} + z\\sqrt{1-y^2} = 1$,\nand $z\\sqrt{1-x^2} + x\\sqrt{1-z^2} = 1$'
                 },
                 hint: {
                     'th': 'นิพจน์ $a\\sqrt{1-b^2} + b\\sqrt{1-a^2}$ คล้ายกับสูตรตรีโกณมิติใดหรือไม่? ลองแทน $x = \\sin A$',
@@ -158,8 +158,8 @@ const TEST_DATA = {
                     'en': 'Define $a_n$ for $n \\ge 1$ to be the $n$-th positive integer that is *not* a perfect square ($2, 3, 5, 6, 7, 8, 10, \\dots$) Find $n$ such that $a_n = 1000$'
                 },
                 hint: {
-                    'th': 'นี่คือปัญหาการนับ $a_n = 1000$ หมายความว่า 1000 คือตัวที่ $n$ $\\$ $n$ คือ (จำนวนทั้งหมด $\\le 1000$) ลบด้วย (จำนวนอะไร $\\le 1000$?)',
-                    'en': 'This is a counting problem. $a_n = 1000$ means 1000 is the $n$-th non-square. $\\$ $n$ = (Total numbers $\\le 1000$) - (Number of ... $\\le 1000$?)'
+                    'th': 'นี่คือปัญหาการนับ $a_n = 1000$ หมายความว่า 1000 คือตัวที่ $n$\n$n$ คือ (จำนวนทั้งหมด $\\le 1000$) ลบด้วย (จำนวนอะไร $\\le 1000$?)',
+                    'en': 'This is a counting problem. $a_n = 1000$ means 1000 is the $n$-th non-square.\n$n$ = (Total numbers $\\le 1000$) - (Number of ... $\\le 1000$?)'
                 },
                 answer: '969',
                 solution: {
