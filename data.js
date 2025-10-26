@@ -119,11 +119,11 @@ const TEST_DATA = {
                     'en': '1. $P(n) \\ne 0$ for $n \\in \\mathbb{N}$ because $P(n) \\mid 2^n-1$ and $2^n-1 \\ne 0$\n2. Let $m = P(n)$. We have $m \\mid 2^n-1$ $\\implies 2^n \\equiv 1 \\pmod m$\n3. Consider $P(n + k \\cdot m)$ for $k \\in \\mathbb{Z}$ $\\implies P(n+km) \\equiv P(n) \\equiv m \\equiv 0 \\pmod m$ so $m \\mid P(n+km)$ \n4. By hypothesis, $P(n+km) \\mid 2^{n+km} - 1$\n5. Thus $m \\mid 2^{n+km} - 1$ $\\implies m \\mid (2^n)(2^m)^k - 1$ $\\implies m \\mid (1)(2^m)^k - 1 \\pmod m$ (since $2^n \\equiv 1 \\pmod m$) $\\implies m \\mid (2^m)^k - 1$ for all $k$. For $k=1$, $m \\mid 2^m - 1$\n6. So, $P(n) \\mid 2^{P(n)} - 1$ for all $n \\in \\mathbb{N}$\n7. The only integers $m$ satisfying $m \\mid 2^m - 1$ are $m=1$ and $m=-1$ (Proof by smallest prime divisor).\n8. Therefore, $P(n)$ must be $1$ or $-1$ for all $n \\in \\mathbb{N}$\n9. A polynomial $P(x)$ that takes values $1$ or $-1$ at infinitely many integer points must be a constant polynomial ($P(x) = 1$ or $P(x) = -1$)\n10. This contradicts the given condition that $P(x)$ is *non-constant*.\n11. Conclusion: No such polynomial exists.'
                 }
             },
-            // ข้อ 3
+            // ข้อ 3 [แก้ไข] เพิ่ม \n ให้สมการขึ้นบรรทัดใหม่
             {
                 q: {
-                    'th': 'จงหาค่าของ $x^2+y^2+z^2$ เมื่อ $x, y, z$ เป็นจำนวนจริงที่สอดคล้องกับ $x\\sqrt{1-y^2} + y\\sqrt{1-x^2} = 1$,\n$y\\sqrt{1-z^2} + z\\sqrt{1-y^2} = 1$,\n$z\\sqrt{1-x^2} + x\\sqrt{1-z^2} = 1$',
-                    'en': 'Find $x^2+y^2+z^2$, where $x, y, z$ are real numbers satisfying $x\\sqrt{1-y^2} + y\\sqrt{1-x^2} = 1$,\n$y\\sqrt{1-z^2} + z\\sqrt{1-y^2} = 1$,\nand $z\\sqrt{1-x^2} + x\\sqrt{1-z^2} = 1$'
+                    'th': 'จงหาค่าของ $x^2+y^2+z^2$ เมื่อ $x, y, z$ เป็นจำนวนจริงที่สอดคล้องกับ:\n$x\\sqrt{1-y^2} + y\\sqrt{1-x^2} = 1$\n$y\\sqrt{1-z^2} + z\\sqrt{1-y^2} = 1$\n$z\\sqrt{1-x^2} + x\\sqrt{1-z^2} = 1$',
+                    'en': 'Find $x^2+y^2+z^2$, where $x, y, z$ are real numbers satisfying:\n$x\\sqrt{1-y^2} + y\\sqrt{1-x^2} = 1$\n$y\\sqrt{1-z^2} + z\\sqrt{1-y^2} = 1$\n$z\\sqrt{1-x^2} + x\\sqrt{1-z^2} = 1$'
                 },
                 hint: {
                     'th': 'นิพจน์ $a\\sqrt{1-b^2} + b\\sqrt{1-a^2}$ คล้ายกับสูตรตรีโกณมิติใดหรือไม่? ลองแทน $x = \\sin A$',
