@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Global setup
     loadLanguage();
     initLangToggle();
-    initGlobalRender();
+    initGlobalRender(); // This will run on static content first
 
     // Page-specific setup
     const bodyId = document.body.id;
@@ -35,8 +35,8 @@ function initLangToggle() {
             loadLanguage();
             // Re-render dynamic content
             const bodyId = document.body.id;
-            if (bodyId === 'hub-page') renderHub();
-            if (bodyId === 'test-page') renderTest(); // [สำคัญ] นี่คือส่วนที่ทำให้ปุ่มในหน้า test ทำงาน
+            if (bodyId === 'hub-page') renderHub(); 
+            if (bodyId === 'test-page') renderTest(); 
             if (bodyId === 'results-page') renderResults();
         });
     }
@@ -70,6 +70,21 @@ function initGlobalRender() {
         });
     }
 }
+
+// [แก้ไข] ฟังก์ชันสำหรับ Render KaTeX เฉพาะจุด
+function renderMath(element) {
+    if (window.renderMathInElement) {
+        renderMathInElement(element, {
+            delimiters: [
+                {left: '$$', right: '$$', display: true},
+                {left: '$', right: '$', display: false},
+                {left: '\\(', right: '\\)', display: false},
+                {left: '\\[', right: '\\]', display: true}
+            ]
+        });
+    }
+}
+
 
 // --- Login Page (index.html) ---
 function initLogin() {
@@ -167,14 +182,11 @@ function startTest(testId, user) {
     const isUnlimited = localStorage.getItem('isUnlimited') === 'true';
     const attemptKey = `attempt_${user}_${testId}`;
     
-    // Set attempt flag *immediately* unless unlimited
     if (!isUnlimited) {
         localStorage.setItem(attemptKey, 'true');
     }
 
-    // Set start time
     localStorage.setItem(`testStartTime_${testId}`, Date.now());
-    // Clear any old results
     localStorage.removeItem(`results_${user}_${testId}`);
     
     window.location.href = 'test.html';
@@ -186,7 +198,7 @@ function initTest() {
     const user = checkAuth();
     const testId = localStorage.getItem('currentTestId');
     if (!testId) {
-        window.location.href = 'hub.html'; // No test selected
+        window.location.href = 'hub.html';
         return;
     }
 
@@ -195,7 +207,6 @@ function initTest() {
     const startTime = localStorage.getItem(startTimeKey);
 
     if (!startTime) {
-        // Should not happen, but safeguard
         window.location.href = 'hub.html';
         return;
     }
@@ -206,7 +217,7 @@ function initTest() {
 
     document.getElementById('test-form').addEventListener('submit', e => {
         e.preventDefault();
-        submitTest(testId, user, false); // false = not auto-submit
+        submitTest(testId, user, false);
     });
 }
 
@@ -220,7 +231,6 @@ function renderTest() {
     test.questions.forEach((q, index) => {
         const qNum = index + 1;
         
-        // [แก้ไข] แปลง \n (จาก data.js) เป็น <br> (ใน HTML)
         const questionText = (q.q[lang] || q.q['en']).replace(/\n/g, '<br>');
         const hintText = (q.hint[lang] || q.hint['en']).replace(/\n/g, '<br>');
 
@@ -239,23 +249,31 @@ function renderTest() {
                     </div>
                 </div>
                 <label for="q-ans-${qNum}" class="input-group-label">${getI18n('your_answer')}</label>
+                <label class="answer-format-label" for="q-ans-${qNum}">${getI18n('answer_format_placeholder')}</label>
                 <input type="text" id="q-ans-${qNum}" class="answer-input" name="q${qNum}">
             </div>
         `;
         container.innerHTML += qBox;
     });
 
-    // Add hint listeners
+    // Render Math สำหรับคำถาม
+    renderMath(container);
+
+    // [แก้ไข] เพิ่ม Event Listener สำหรับ Hint
     container.querySelectorAll('.hint-button').forEach(button => {
         button.addEventListener('click', () => {
             const targetId = button.dataset.hintTarget;
             const hintContent = document.getElementById(targetId);
+            
+            // Render KaTeX ใน Hint เฉพาะตอนกดครั้งแรก
+            if (!hintContent.dataset.rendered) {
+                renderMath(hintContent);
+                hintContent.dataset.rendered = 'true';
+            }
+            
             hintContent.style.display = hintContent.style.display === 'block' ? 'none' : 'block';
         });
     });
-
-    // Re-render math
-    initGlobalRender();
 }
 
 function startTimer(durationMinutes, startTime, testId, user) {
@@ -270,11 +288,11 @@ function startTimer(durationMinutes, startTime, testId, user) {
             clearInterval(timerInterval);
             timerEl.textContent = '00:00:00';
             timerEl.classList.add('low-time');
-            submitTest(testId, user, true); // true = auto-submit
+            submitTest(testId, user, true); 
             return;
         }
 
-        if (timeLeft < 5 * 60 * 1000) { // 5 minutes left
+        if (timeLeft < 5 * 60 * 1000) { 
             timerEl.classList.add('low-time');
         }
 
@@ -307,7 +325,6 @@ function submitTest(testId, user, isAutoSubmit) {
         const userAnswer = input ? input.value.trim() : "";
         userAnswers.push(userAnswer);
 
-        // Simple string comparison for answers
         const isCorrect = userAnswer === q.answer;
         if (isCorrect) {
             score++;
@@ -323,7 +340,6 @@ function submitTest(testId, user, isAutoSubmit) {
 
     localStorage.setItem(`results_${user}_${testId}`, JSON.stringify(results));
     
-    // Redirect after a short delay if auto-submitting
     setTimeout(() => {
         window.location.href = 'results.html';
     }, isAutoSubmit ? 2000 : 0);
@@ -357,7 +373,6 @@ function renderResults() {
     document.getElementById('results-title').textContent = `${getI18n('results_for')} ${getI18nContent(test.title)}`;
 
     if (!resultsData) {
-        // No results found, means user left test
         document.getElementById('score-display').textContent = `0 / ${test.meta.questions}`;
         document.getElementById('no-results-message').style.display = 'block';
         return;
@@ -379,7 +394,6 @@ function renderResults() {
         const statusText = isCorrect ? getI18n('correct_status') : getI18n('incorrect_status');
         const statusClass = isCorrect ? 'correct' : 'incorrect';
 
-        // [แก้ไข] แปลง \n (จาก data.js) เป็น <br> (ใน HTML)
         const questionText = (q.q[lang] || q.q['en']).replace(/\n/g, '<br>');
         const solutionText = (q.solution[lang] || q.solution['en']).replace(/\n/g, '<br>');
 
@@ -415,8 +429,8 @@ function renderResults() {
         container.innerHTML += resultBox;
     });
 
-    // Re-render math
-    initGlobalRender();
+    // Render Math สำหรับหน้าผลลัพธ์
+    renderMath(container);
 }
 
 // --- Auth ---
