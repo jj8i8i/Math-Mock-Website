@@ -268,15 +268,16 @@ h1, h2, h3 {
 /* KaTeX */
 .katex { font-size: 1.1em; }
 
-/* --- [เพิ่ม] สไตล์สำหรับ header ในหน้า Test --- */
+/* --- [แก้ไข] สไตล์สำหรับ header ในหน้า Test --- */
 .header-controls.test-controls {
     display: flex;
     align-items: center;
     gap: 1.5rem;
 }
 
-/* --- [เพิ่ม] สไตล์เพื่อให้อ่านง่ายขึ้น (แก้ wall of text) --- */
+/* --- [แก้ไข] สไตล์เพื่อให้อ่านง่ายขึ้น (แก้ wall of text) --- */
 .question-content,
+.hint-content,
 .solution-box div {
-    line-height: 1.8; /* เพิ่มระยะห่างระหว่างบรรทัด */
+    line-height: 1.9; /* เพิ่มระยะห่างระหว่างบรรทัด */
 }
