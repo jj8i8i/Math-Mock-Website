@@ -77,8 +77,6 @@ function renderMath(element) {
         }
     } else {
         console.warn("KaTeX library not loaded yet.");
-        // Optionally, retry after a short delay
-        // setTimeout(() => renderMath(element), 100);
     }
 }
 
@@ -104,7 +102,6 @@ function initLogin() {
             errorMsg.textContent = getI18n('login_error');
         }
     });
-    // Render math if any exists on login page (unlikely but safe)
     renderMath(document.body);
 }
 
@@ -117,7 +114,6 @@ function initHub() {
         window.location.href = 'index.html';
     });
     renderHub();
-    // Render math if any exists on hub page (unlikely but safe)
     renderMath(document.body);
 }
 
@@ -234,6 +230,7 @@ function renderTest() {
         const questionText = (q.q[lang] || q.q['en']).replace(/\n/g, '<br>');
         const hintTextDisplay = (q.hint[lang] || q.hint['en']).replace(/\n/g, '<br>');
 
+        // [แก้ไข] เพิ่ม class 'hint-hidden' เริ่มต้น
         const qBox = `
             <div class="card question-box">
                 <div class="question-header">${getI18n('question')} ${qNum}</div>
@@ -244,7 +241,7 @@ function renderTest() {
                     <button type="button" class="hint-button" data-hint-target="hint-${qNum}">
                         ${getI18n('hint')}
                     </button>
-                    <div class="hint-content" id="hint-${qNum}" style="display: none;"> ${hintTextDisplay}
+                    <div class="hint-content hint-hidden" id="hint-${qNum}"> ${hintTextDisplay}
                     </div>
                 </div>
                 <label for="q-ans-${qNum}" class="input-group-label">${getI18n('your_answer')}</label>
@@ -255,27 +252,17 @@ function renderTest() {
         container.innerHTML += qBox;
     });
 
-    // [แก้ไข] Render Math สำหรับ *เฉพาะ* ส่วนคำถามก่อน
-    container.querySelectorAll('.question-content').forEach(el => renderMath(el));
+    // Render Math ทั้งหมดหลังจากสร้าง HTML (รวมถึง Hint ที่ซ่อนอยู่)
+    renderMath(container);
 
-    // [แก้ไข] Event Listener สำหรับ Hint (เวอร์ชัน 4)
+    // [แก้ไข] Event Listener สำหรับ Hint (เวอร์ชัน 5 - ใช้ class toggle)
     container.querySelectorAll('.hint-button').forEach(button => {
         button.addEventListener('click', () => {
             const targetId = button.dataset.hintTarget;
             const hintContent = document.getElementById(targetId);
-            const isHidden = hintContent.style.display === 'none';
-
-            if (isHidden) {
-                // ทำให้มองเห็นก่อน
-                hintContent.style.display = 'block';
-                 // หน่วงเวลาเล็กน้อย (10ms) แล้วค่อย Render Math
-                setTimeout(() => {
-                    renderMath(hintContent);
-                }, 10);
-            } else {
-                // ซ่อน
-                hintContent.style.display = 'none';
-            }
+            // สลับ class 'hint-hidden'
+            hintContent.classList.toggle('hint-hidden');
+            // ไม่ต้องเรียก renderMath ซ้ำ เพราะมัน Render ไปแล้วตอนแรก
         });
     });
 }
@@ -380,8 +367,7 @@ function renderResults() {
     if (!resultsData) {
         document.getElementById('score-display').textContent = `0 / ${test.meta.questions}`;
         document.getElementById('no-results-message').style.display = 'block';
-         // [แก้ไข] Render Math ทั่วไปเผื่อมีในส่วนอื่น
-        renderMath(document.body);
+        renderMath(document.body); // Render general math if any
         return;
     }
 
@@ -436,7 +422,7 @@ function renderResults() {
         container.innerHTML += resultBox;
     });
 
-    // [แก้ไข] Render Math หลังจากสร้าง HTML เสร็จ
+    // Render Math after generating all result boxes
     renderMath(container);
 }
 
