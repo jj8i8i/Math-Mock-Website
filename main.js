@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Global setup
     loadLanguage();
     initLangToggle();
-    // [แก้ไข] ไม่ต้องเรียก initGlobalRender() ที่นี่แล้ว
+    // Don't call initGlobalRender here initially for body
 
     // Page-specific setup
     const bodyId = document.body.id;
@@ -58,34 +58,27 @@ function getI18nContent(contentObject) {
 }
 
 // --- KaTeX Auto-render ---
-function initGlobalRender() {
-    // This function now just renders math on the whole body
-    // Useful for initial load and page changes where dynamic content isn't the main focus
-    if (window.renderMathInElement) {
-        renderMathInElement(document.body, {
-            delimiters: [
-                {left: '$$', right: '$$', display: true},
-                {left: '$', right: '$', display: false},
-                {left: '\\(', right: '\\)', display: false},
-                {left: '\\[', right: '\\]', display: true}
-            ],
-            throwOnError: false
-        });
-    }
-}
-
 // Function to render math in a specific element (used for dynamic content)
 function renderMath(element) {
+    // Ensure KaTeX is loaded before trying to render
     if (window.renderMathInElement) {
-        renderMathInElement(element, {
-            delimiters: [
-                {left: '$$', right: '$$', display: true},
-                {left: '$', right: '$', display: false},
-                {left: '\\(', right: '\\)', display: false},
-                {left: '\\[', right: '\\]', display: true}
-            ],
-            throwOnError: false
-        });
+        try {
+            renderMathInElement(element, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false},
+                    {left: '\\(', right: '\\)', display: false},
+                    {left: '\\[', right: '\\]', display: true}
+                ],
+                throwOnError: false // Don't stop execution on render error
+            });
+        } catch (error) {
+            console.error("KaTeX rendering error:", error);
+        }
+    } else {
+        console.warn("KaTeX library not loaded yet.");
+        // Optionally, retry after a short delay
+        // setTimeout(() => renderMath(element), 100);
     }
 }
 
@@ -111,8 +104,8 @@ function initLogin() {
             errorMsg.textContent = getI18n('login_error');
         }
     });
-    // Call initial render for login page if needed (usually not needed)
-    initGlobalRender();
+    // Render math if any exists on login page (unlikely but safe)
+    renderMath(document.body);
 }
 
 // --- Hub Page (hub.html) ---
@@ -124,8 +117,8 @@ function initHub() {
         window.location.href = 'index.html';
     });
     renderHub();
-    // Call initial render for hub page
-    initGlobalRender();
+    // Render math if any exists on hub page (unlikely but safe)
+    renderMath(document.body);
 }
 
 function renderHub() {
@@ -219,7 +212,7 @@ function initTest() {
     }
 
     document.getElementById('test-title').textContent = getI18nContent(test.title);
-    renderTest(); // Render content first
+    renderTest(); // Render content
     startTimer(test.meta.time, startTime, testId, user);
 
     document.getElementById('test-form').addEventListener('submit', e => {
@@ -240,7 +233,6 @@ function renderTest() {
 
         const questionText = (q.q[lang] || q.q['en']).replace(/\n/g, '<br>');
         const hintTextDisplay = (q.hint[lang] || q.hint['en']).replace(/\n/g, '<br>');
-
 
         const qBox = `
             <div class="card question-box">
@@ -263,10 +255,10 @@ function renderTest() {
         container.innerHTML += qBox;
     });
 
-    // [แก้ไข] เรียก Render Math หลังจากสร้าง HTML เสร็จ
-    renderMath(container);
+    // [แก้ไข] Render Math สำหรับ *เฉพาะ* ส่วนคำถามก่อน
+    container.querySelectorAll('.question-content').forEach(el => renderMath(el));
 
-    // [แก้ไข] Event Listener สำหรับ Hint (เวอร์ชัน 3)
+    // [แก้ไข] Event Listener สำหรับ Hint (เวอร์ชัน 4)
     container.querySelectorAll('.hint-button').forEach(button => {
         button.addEventListener('click', () => {
             const targetId = button.dataset.hintTarget;
@@ -274,10 +266,14 @@ function renderTest() {
             const isHidden = hintContent.style.display === 'none';
 
             if (isHidden) {
+                // ทำให้มองเห็นก่อน
                 hintContent.style.display = 'block';
-                // Re-render math inside the specific hint *after* it's displayed
-                renderMath(hintContent);
+                 // หน่วงเวลาเล็กน้อย (10ms) แล้วค่อย Render Math
+                setTimeout(() => {
+                    renderMath(hintContent);
+                }, 10);
             } else {
+                // ซ่อน
                 hintContent.style.display = 'none';
             }
         });
@@ -368,7 +364,7 @@ function initResults() {
         window.location.href = 'hub.html';
     });
 
-    renderResults(); // Render content first
+    renderResults(); // Render content
 }
 
 function renderResults() {
@@ -384,6 +380,8 @@ function renderResults() {
     if (!resultsData) {
         document.getElementById('score-display').textContent = `0 / ${test.meta.questions}`;
         document.getElementById('no-results-message').style.display = 'block';
+         // [แก้ไข] Render Math ทั่วไปเผื่อมีในส่วนอื่น
+        renderMath(document.body);
         return;
     }
 
@@ -438,7 +436,7 @@ function renderResults() {
         container.innerHTML += resultBox;
     });
 
-    // [แก้ไข] เรียก Render Math หลังจากสร้าง HTML เสร็จ
+    // [แก้ไข] Render Math หลังจากสร้าง HTML เสร็จ
     renderMath(container);
 }
 
