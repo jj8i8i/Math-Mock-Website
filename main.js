@@ -220,9 +220,9 @@ function renderTest() {
     test.questions.forEach((q, index) => {
         const qNum = index + 1;
         
-        // [แก้ไข] แปลง \n เป็น <br> เพื่อการแสดงผลที่ถูกต้อง
-        const questionText = (q.q[lang] || q.q['en']).replace(/\\n/g, '<br>');
-        const hintText = (q.hint[lang] || q.hint['en']).replace(/\\n/g, '<br>');
+        // [แก้ไข] แปลง \n (จาก data.js) เป็น <br> (ใน HTML)
+        const questionText = (q.q[lang] || q.q['en']).replace(/\n/g, '<br>');
+        const hintText = (q.hint[lang] || q.hint['en']).replace(/\n/g, '<br>');
 
         const qBox = `
             <div class="card question-box">
@@ -379,9 +379,9 @@ function renderResults() {
         const statusText = isCorrect ? getI18n('correct_status') : getI18n('incorrect_status');
         const statusClass = isCorrect ? 'correct' : 'incorrect';
 
-        // [แก้ไข] แปลง \n เป็น <br> เพื่อการแสดงผลที่ถูกต้อง
-        const questionText = (q.q[lang] || q.q['en']).replace(/\\n/g, '<br>');
-        const solutionText = (q.solution[lang] || q.solution['en']).replace(/\\n/g, '<br>');
+        // [แก้ไข] แปลง \n (จาก data.js) เป็น <br> (ใน HTML)
+        const questionText = (q.q[lang] || q.q['en']).replace(/\n/g, '<br>');
+        const solutionText = (q.solution[lang] || q.solution['en']).replace(/\n/g, '<br>');
 
         const resultBox = `
             <div class="card result-box">
