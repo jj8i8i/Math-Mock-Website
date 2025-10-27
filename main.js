@@ -228,7 +228,7 @@ function renderTest() {
         const questionText = (q.q[lang] || q.q['en']).replace(/\n/g, '<br>');
         const hintTextDisplay = (q.hint[lang] || q.hint['en']).replace(/\n/g, '<br>');
 
-        // [แก้ไข] ใช้ class 'hint-initially-hidden' แทน display:none
+        // ใช้ display: none; เหมือนเดิม
         const qBox = `
             <div class="card question-box">
                 <div class="question-header">${getI18n('question')} ${qNum}</div>
@@ -239,7 +239,7 @@ function renderTest() {
                     <button type="button" class="hint-button" data-hint-target="hint-${qNum}">
                         ${getI18n('hint')}
                     </button>
-                    <div class="hint-content hint-initially-hidden" id="hint-${qNum}"> ${hintTextDisplay}
+                    <div class="hint-content" id="hint-${qNum}" style="display: none;"> ${hintTextDisplay}
                     </div>
                 </div>
                 <label for="q-ans-${qNum}" class="input-group-label">${getI18n('your_answer')}</label>
@@ -250,16 +250,28 @@ function renderTest() {
         container.innerHTML += qBox;
     });
 
-    // Render Math ทั้งหมดหลังจากสร้าง HTML (รวม Hint ที่ซ่อนอยู่ด้วย class)
-    renderMath(container);
+    // Render Math สำหรับคำถามก่อน
+    container.querySelectorAll('.question-content').forEach(el => renderMath(el));
 
-    // [แก้ไข] Event Listener สำหรับ Hint (เวอร์ชัน 7 - สลับ class 'hint-visible')
+    // [แก้ไข] Event Listener สำหรับ Hint (เวอร์ชัน 7 - Render ตอนกดครั้งแรก)
     container.querySelectorAll('.hint-button').forEach(button => {
         button.addEventListener('click', () => {
             const targetId = button.dataset.hintTarget;
             const hintContent = document.getElementById(targetId);
-            // สลับ class 'hint-visible'
-            hintContent.classList.toggle('hint-visible');
+            const isHidden = hintContent.style.display === 'none';
+
+            if (isHidden) {
+                // ทำให้มองเห็น
+                hintContent.style.display = 'block';
+                // ถ้ายังไม่เคย Render Math มาก่อน ให้ Render เฉพาะ Hint นี้
+                if (!hintContent.dataset.rendered) {
+                    renderMath(hintContent);
+                    hintContent.dataset.rendered = 'true'; // Mark as rendered
+                }
+            } else {
+                // ซ่อน
+                hintContent.style.display = 'none';
+            }
         });
     });
 }
