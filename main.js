@@ -1,454 +1,297 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // Global setup
-    loadLanguage();
-    initLangToggle();
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;700&display=swap');
 
-    // Page-specific setup
-    const bodyId = document.body.id;
-    if (bodyId === 'login-page') initLogin();
-    if (bodyId === 'hub-page') initHub();
-    if (bodyId === 'test-page') initTest();
-    if (bodyId === 'results-page') initResults();
-});
-
-// --- Language (i18n) ---
-function loadLanguage() {
-    const lang = localStorage.getItem('language') || 'th';
-    document.documentElement.lang = lang;
-
-    document.querySelectorAll('[data-lang-key]').forEach(el => {
-        const key = el.dataset.langKey;
-        if (I18N_DB[lang] && I18N_DB[lang][key]) {
-            el.innerHTML = I18N_DB[lang][key];
-        }
-    });
+:root {
+    --primary-color: #007bff;
+    --primary-hover: #0056b3;
+    --secondary-color: #6c757d;
+    --secondary-hover: #545b62;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --light-color: #f8f9fa;
+    --dark-color: #343a40;
+    --bg-color: #f4f7f6;
+    --card-bg: #ffffff;
+    --text-color: #212529;
+    --border-color: #dee2e6;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-function initLangToggle() {
-    const toggle = document.getElementById('lang-toggle');
-    if (toggle) {
-        toggle.addEventListener('click', () => {
-            const currentLang = localStorage.getItem('language') || 'th';
-            const newLang = currentLang === 'th' ? 'en' : 'th';
-            localStorage.setItem('language', newLang);
-            loadLanguage();
-            // Re-render dynamic content
-            const bodyId = document.body.id;
-            if (bodyId === 'hub-page') renderHub();
-            if (bodyId === 'test-page') renderTest();
-            if (bodyId === 'results-page') renderResults();
-        });
-    }
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
-function getLang() {
-    return localStorage.getItem('language') || 'th';
+body {
+    font-family: 'Sarabun', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
 }
 
-function getI18n(key) {
-    const lang = getLang();
-    return (I18N_DB[lang] && I18N_DB[lang][key]) ? I18N_DB[lang][key] : key;
+.container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1rem;
 }
 
-
-function getI18nContent(contentObject) {
-    const lang = getLang();
-    return contentObject[lang] || contentObject['en'];
+.card {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    box-shadow: var(--shadow);
+    margin-bottom: 1.5rem;
 }
 
-// --- KaTeX Auto-render ---
-// Function to render math in a specific element
-function renderMath(element) {
-    if (window.renderMathInElement) {
-        try {
-            renderMathInElement(element, {
-                delimiters: [
-                    {left: '$$', right: '$$', display: true},
-                    {left: '$', right: '$', display: false},
-                    {left: '\\(', right: '\\)', display: false},
-                    {left: '\\[', right: '\\]', display: true}
-                ],
-                throwOnError: false
-            });
-        } catch (error) {
-            console.error("KaTeX rendering error:", error);
-        }
-    } else {
-        // If KaTeX is not loaded yet, wait and try again
-        // This might happen on slow connections
-        console.warn("KaTeX library not loaded yet, retrying...");
-        setTimeout(() => renderMath(element), 200);
-    }
+h1, h2, h3 {
+    margin-bottom: 1rem;
+    font-weight: 700;
 }
 
-
-// --- Login Page (index.html) ---
-function initLogin() {
-    if (localStorage.getItem('loggedInUser')) {
-        window.location.href = 'hub.html';
-    }
-
-    const form = document.getElementById('login-form');
-    form.addEventListener('submit', e => {
-        e.preventDefault();
-        const user = document.getElementById('username').value;
-        const pass = document.getElementById('password').value;
-        const errorMsg = document.getElementById('login-error');
-
-        if (USER_DB[user] && USER_DB[user] === pass) {
-            localStorage.setItem('loggedInUser', user);
-            localStorage.setItem('isUnlimited', (user === 'JJ'));
-            window.location.href = 'hub.html';
-        } else {
-            errorMsg.textContent = getI18n('login_error');
-        }
-    });
-    // Ensure math renders if page directly loaded
-    renderMath(document.body);
+/* --- Header & Nav --- */
+.lang-toggle-container {
+    text-align: right;
+    padding: 1rem;
+}
+.lang-toggle {
+    background: none;
+    border: 1px solid var(--border-color);
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+}
+.header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--card-bg);
+    padding: 1rem 2rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.header-controls {
+    display: flex;
+    gap: 1rem;
 }
 
-// --- Hub Page (hub.html) ---
-function initHub() {
-    const user = checkAuth();
-    document.getElementById('hub-username').textContent = user;
-    document.getElementById('logout-button').addEventListener('click', () => {
-        localStorage.clear();
-        window.location.href = 'index.html';
-    });
-    renderHub();
-     // Ensure math renders if page directly loaded
-    renderMath(document.body);
+/* --- Login Page --- */
+#login-page .container {
+    max-width: 450px;
+    margin-top: 4rem;
+}
+.input-group {
+    margin-bottom: 1.25rem;
+}
+.input-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+.input-group input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+}
+.button-primary {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    background-color: var(--primary-color);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.button-primary:hover {
+    background-color: var(--primary-hover);
+}
+.button-secondary {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    color: var(--text-color);
+    background-color: var(--light-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.button-secondary:hover {
+    background-color: #e2e6ea;
+}
+.error-message {
+    color: var(--danger-color);
+    margin-top: 1rem;
+    text-align: center;
 }
 
-function renderHub() {
-    const container = document.getElementById('test-list-container');
-    container.innerHTML = '';
-    const user = localStorage.getItem('loggedInUser');
-    const isUnlimited = localStorage.getItem('isUnlimited') === 'true';
-
-    Object.values(TEST_DATA).forEach(test => {
-        const testId = test.id;
-        const attemptKey = `attempt_${user}_${testId}`;
-        const hasAttempted = localStorage.getItem(attemptKey) === 'true';
-
-        let actionButton;
-        if (hasAttempted && !isUnlimited) {
-            actionButton = `
-                <button class="button-secondary" data-testid="${testId}" data-action="view">
-                    ${getI18n('view_results')} (${getI18n('attempt_used')})
-                </button>`;
-        } else {
-            actionButton = `
-                <button class="button-primary" data-testid="${testId}" data-action="start">
-                    ${getI18n('start_test')}
-                </button>`;
-        }
-
-        const card = `
-            <div class="card test-card">
-                <div class="test-card-info">
-                    <h3>${getI18nContent(test.title)}</h3>
-                    <div class="test-meta">
-                        <span>${test.meta.questions} ${getI18n('questions')}</span>
-                        <span>${test.meta.time} ${getI18n('minutes')}</span>
-                        <span>${getI18n('difficulty')}: ${getI18nContent(test.meta.difficulty)}</span>
-                    </div>
-                </div>
-                <div class="test-card-action">
-                    ${actionButton}
-                </div>
-            </div>
-        `;
-        container.innerHTML += card;
-    });
-
-    container.querySelectorAll('button').forEach(button => {
-        button.addEventListener('click', () => {
-            const testId = button.dataset.testid;
-            const action = button.dataset.action;
-            localStorage.setItem('currentTestId', testId);
-
-            if (action === 'start') {
-                startTest(testId, user);
-            } else if (action === 'view') {
-                window.location.href = 'results.html';
-            }
-        });
-    });
+/* --- Hub Page --- */
+.test-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+}
+.test-card-info h3 { margin-bottom: 0.5rem; }
+.test-meta {
+    display: flex;
+    gap: 1.5rem;
+    color: var(--secondary-color);
+}
+.test-card-action .button-primary { width: auto; }
+.test-card-action .button-secondary { width: auto; background-color: var(--success-color); color: white; border: none; }
+.test-card-action .button-primary:disabled {
+    background-color: var(--secondary-color);
+    cursor: not-allowed;
 }
 
-function startTest(testId, user) {
-    const isUnlimited = localStorage.getItem('isUnlimited') === 'true';
-    const attemptKey = `attempt_${user}_${testId}`;
-
-    if (!isUnlimited) {
-        localStorage.setItem(attemptKey, 'true');
-    }
-
-    localStorage.setItem(`testStartTime_${testId}`, Date.now());
-    localStorage.removeItem(`results_${user}_${testId}`);
-
-    window.location.href = 'test.html';
+/* --- Test Page --- */
+.test-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+#timer-container {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+#timer.low-time {
+    color: var(--danger-color);
+    animation: pulse 1s infinite;
+}
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
 }
 
-// --- Test Page (test.html) ---
-let timerInterval;
-function initTest() {
-    const user = checkAuth();
-    const testId = localStorage.getItem('currentTestId');
-    if (!testId) {
-        window.location.href = 'hub.html';
-        return;
-    }
-
-    const test = TEST_DATA[testId];
-    const startTimeKey = `testStartTime_${testId}`;
-    const startTime = localStorage.getItem(startTimeKey);
-
-    if (!startTime) {
-        window.location.href = 'hub.html';
-        return;
-    }
-
-    document.getElementById('test-title').textContent = getI18nContent(test.title);
-    renderTest(); // Render content
-    startTimer(test.meta.time, startTime, testId, user);
-
-    document.getElementById('test-form').addEventListener('submit', e => {
-        e.preventDefault();
-        submitTest(testId, user, false);
-    });
+.question-box {
+    margin-bottom: 2rem;
+}
+.question-header {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+.question-content {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+.hint-container {
+    margin: 1rem 0;
+}
+.hint-button {
+    font-size: 0.9rem;
+    background: none;
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    cursor: pointer;
 }
 
-function renderTest() {
-    const testId = localStorage.getItem('currentTestId');
-    const test = TEST_DATA[testId];
-    const container = document.getElementById('question-container');
-    container.innerHTML = '';
-    const lang = getLang();
-
-    test.questions.forEach((q, index) => {
-        const qNum = index + 1;
-
-        const questionText = (q.q[lang] || q.q['en']).replace(/\n/g, '<br>');
-        const hintTextDisplay = (q.hint[lang] || q.hint['en']).replace(/\n/g, '<br>');
-
-        // ใช้ display: none; เหมือนเดิม
-        const qBox = `
-            <div class="card question-box">
-                <div class="question-header">${getI18n('question')} ${qNum}</div>
-                <div class="question-content" id="q-content-${qNum}">
-                    ${questionText}
-                </div>
-                <div class="hint-container">
-                    <button type="button" class="hint-button" data-hint-target="hint-${qNum}">
-                        ${getI18n('hint')}
-                    </button>
-                    <div class="hint-content" id="hint-${qNum}" style="display: none;"> ${hintTextDisplay}
-                    </div>
-                </div>
-                <label for="q-ans-${qNum}" class="input-group-label">${getI18n('your_answer')}</label>
-                <label class="answer-format-label" for="q-ans-${qNum}">${getI18n('answer_format_placeholder')}</label>
-                <input type="text" id="q-ans-${qNum}" class="answer-input" name="q${qNum}">
-            </div>
-        `;
-        container.innerHTML += qBox;
-    });
-
-    // Render Math สำหรับคำถามก่อน
-    container.querySelectorAll('.question-content').forEach(el => renderMath(el));
-
-    // [แก้ไข] Event Listener สำหรับ Hint (เวอร์ชัน 8 - display + setTimeout + rendered flag)
-    container.querySelectorAll('.hint-button').forEach(button => {
-        button.addEventListener('click', () => {
-            const targetId = button.dataset.hintTarget;
-            const hintContent = document.getElementById(targetId);
-            const isHidden = hintContent.style.display === 'none';
-
-            if (isHidden) {
-                // ทำให้มองเห็น
-                hintContent.style.display = 'block';
-                // ถ้ายังไม่เคย Render Math มาก่อน
-                if (!hintContent.dataset.rendered) {
-                     // หน่วงเวลาเล็กน้อย (100ms) แล้วค่อย Render Math
-                    setTimeout(() => {
-                        renderMath(hintContent);
-                        hintContent.dataset.rendered = 'true'; // Mark as rendered AFTER rendering
-                    }, 100); // Increased delay
-                }
-            } else {
-                // ซ่อน
-                hintContent.style.display = 'none';
-            }
-        });
-    });
+/* [แก้ไข] สไตล์สำหรับ Hint กลับไปใช้ display: none */
+.hint-content {
+    background-color: #fffbe6;
+    border: 1px solid #ffe58f;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin-top: 0.5rem;
+    display: none; /* ซ่อนเริ่มต้น */
+    line-height: 1.9;
 }
 
 
-function startTimer(durationMinutes, startTime, testId, user) {
-    const timerEl = document.getElementById('timer');
-    const endTime = parseInt(startTime, 10) + durationMinutes * 60 * 1000;
-
-    timerInterval = setInterval(() => {
-        const now = Date.now();
-        const timeLeft = endTime - now;
-
-        if (timeLeft <= 0) {
-            clearInterval(timerInterval);
-            timerEl.textContent = '00:00:00';
-            timerEl.classList.add('low-time');
-            submitTest(testId, user, true);
-            return;
-        }
-
-        if (timeLeft < 5 * 60 * 1000) {
-            timerEl.classList.add('low-time');
-        }
-
-        const hours = Math.floor(timeLeft / (1000 * 60 * 60));
-        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-
-        timerEl.textContent =
-            `${String(hours).padStart(2, '0')}:` +
-            `${String(minutes).padStart(2, '0')}:` +
-            `${String(seconds).padStart(2, '0')}`;
-
-    }, 1000);
+.answer-input {
+    width: 100%;
+    max-width: 300px;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+}
+.submit-button {
+    margin-top: 1rem;
+    font-size: 1.25rem;
 }
 
-function submitTest(testId, user, isAutoSubmit) {
-    clearInterval(timerInterval);
-
-    if (isAutoSubmit) {
-        document.getElementById('time-up-modal').style.display = 'flex';
-    }
-
-    const test = TEST_DATA[testId];
-    let score = 0;
-    const userAnswers = [];
-    const correctStatus = [];
-
-    test.questions.forEach((q, index) => {
-        const input = document.getElementById(`q-ans-${index + 1}`);
-        const userAnswer = input ? input.value.trim() : "";
-        userAnswers.push(userAnswer);
-
-        const isCorrect = userAnswer === q.answer;
-        if (isCorrect) {
-            score++;
-        }
-        correctStatus.push(isCorrect);
-    });
-
-    const results = {
-        score: score,
-        userAnswers: userAnswers,
-        correctStatus: correctStatus
-    };
-
-    localStorage.setItem(`results_${user}_${testId}`, JSON.stringify(results));
-
-    setTimeout(() => {
-        window.location.href = 'results.html';
-    }, isAutoSubmit ? 2000 : 0);
+/* สไตล์สำหรับ Placeholder คำตอบ */
+.answer-format-label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--secondary-color);
+    margin-bottom: 0.5rem;
+    font-weight: 400;
 }
 
-// --- Results Page (results.html) ---
-function initResults() {
-    const user = checkAuth();
-    const testId = localStorage.getItem('currentTestId');
-    if (!testId) {
-        window.location.href = 'hub.html';
-        return;
-    }
-
-    document.getElementById('back-to-hub').addEventListener('click', () => {
-        localStorage.removeItem('currentTestId');
-        window.location.href = 'hub.html';
-    });
-
-    renderResults(); // Render content
+/* --- Results Page --- */
+.score-card {
+    text-align: center;
+}
+.score-card h1 {
+    font-size: 3rem;
+    color: var(--primary-color);
+}
+.result-box {
+    margin-bottom: 1.5rem;
+}
+.result-header {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+.result-status.correct { color: var(--success-color); }
+.result-status.incorrect { color: var(--danger-color); }
+.result-answer {
+    background-color: var(--light-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin: 0.5rem 0;
+}
+.solution-box {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--border-color);
 }
 
-function renderResults() {
-    const user = localStorage.getItem('loggedInUser');
-    const testId = localStorage.getItem('currentTestId');
-    const test = TEST_DATA[testId];
-
-    const resultsKey = `results_${user}_${testId}`;
-    const resultsData = localStorage.getItem(resultsKey);
-
-    document.getElementById('results-title').textContent = `${getI18n('results_for')} ${getI18nContent(test.title)}`;
-
-    if (!resultsData) {
-        document.getElementById('score-display').textContent = `0 / ${test.meta.questions}`;
-        document.getElementById('no-results-message').style.display = 'block';
-        renderMath(document.body); // Render static math if any
-        return;
-    }
-
-    document.getElementById('no-results-message').style.display = 'none';
-    const results = JSON.parse(resultsData);
-
-    document.getElementById('score-display').textContent = `${results.score} / ${test.meta.questions}`;
-
-    const container = document.getElementById('results-container');
-    container.innerHTML = '';
-    const lang = getLang();
-
-    test.questions.forEach((q, index) => {
-        const qNum = index + 1;
-        const userAnswer = results.userAnswers[index];
-        const isCorrect = results.correctStatus[index];
-        const statusText = isCorrect ? getI18n('correct_status') : getI18n('incorrect_status');
-        const statusClass = isCorrect ? 'correct' : 'incorrect';
-
-        const questionText = (q.q[lang] || q.q['en']).replace(/\n/g, '<br>');
-        const solutionText = (q.solution[lang] || q.solution['en']).replace(/\n/g, '<br>');
-
-        const resultBox = `
-            <div class="card result-box">
-                <div class="result-header">
-                    ${getI18n('question')} ${qNum}
-                    <span class="result-status ${statusClass}">(${statusText})</span>
-                </div>
-                <div class="question-content" id="res-q-${qNum}">
-                    ${questionText}
-                </div>
-
-                <div class="result-answer">
-                    <strong>${getI18n('your_answer')}</strong>
-                    <span class="${statusClass}">${userAnswer || '(No Answer)'}</span>
-                </div>
-
-                ${!isCorrect ? `
-                <div class="result-answer">
-                    <strong>${getI18n('correct_answer')}</strong>
-                    <span>${q.answer}</span>
-                </div>` : ''}
-
-                <div class="solution-box">
-                    <strong>${getI18n('solution')}</strong>
-                    <div id="sol-${qNum}">
-                        ${solutionText}
-                    </div>
-                </div>
-            </div>
-        `;
-        container.innerHTML += resultBox;
-    });
-
-    // Render Math after generating all result boxes
-    renderMath(container);
+/* --- Modal --- */
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    text-align: center;
 }
 
-// --- Auth ---
-function checkAuth() {
-    const user = localStorage.getItem('loggedInUser');
-    if (!user) {
-        window.location.href = 'index.html';
-        return null;
-    }
-    return user;
+/* KaTeX */
+.katex { font-size: 1.1em; }
+
+/* สไตล์สำหรับ header ในหน้า Test */
+.header-controls.test-controls {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+/* สไตล์เพื่อให้อ่านง่ายขึ้น (แก้ wall of text) */
+.question-content,
+.hint-content, /* Apply to hint as well */
+.solution-box div {
+    line-height: 1.9; /* เพิ่มระยะห่างระหว่างบรรทัด */
 }
