@@ -1,297 +1,517 @@
-@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;700&display=swap');
+document.addEventListener('DOMContentLoaded', () => {
+    // Global setup
+    loadLanguage();
+    initLangToggle();
+    // [แก้ไข] ไม่เรียก renderMath ทั่วไปตรงนี้
 
-:root {
-    --primary-color: #007bff;
-    --primary-hover: #0056b3;
-    --secondary-color: #6c757d;
-    --secondary-hover: #545b62;
-    --success-color: #28a745;
-    --danger-color: #dc3545;
-    --light-color: #f8f9fa;
-    --dark-color: #343a40;
-    --bg-color: #f4f7f6;
-    --card-bg: #ffffff;
-    --text-color: #212529;
-    --border-color: #dee2e6;
-    --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-}
+    // Page-specific setup
+    const bodyId = document.body.id;
+    if (bodyId === 'login-page') initLogin();
+    if (bodyId === 'hub-page') initHub();
+    if (bodyId === 'test-page') initTest();
+    if (bodyId === 'results-page') initResults();
+});
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+// --- Language (i18n) ---
+function loadLanguage() {
+    const lang = localStorage.getItem('language') || 'th';
+    document.documentElement.lang = lang;
 
-body {
-    font-family: 'Sarabun', sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    line-height: 1.6;
-}
-
-.container {
-    max-width: 900px;
-    margin: 2rem auto;
-    padding: 0 1rem;
-}
-
-.card {
-    background-color: var(--card-bg);
-    border-radius: 12px;
-    padding: 1.5rem 2rem;
-    box-shadow: var(--shadow);
-    margin-bottom: 1.5rem;
-}
-
-h1, h2, h3 {
-    margin-bottom: 1rem;
-    font-weight: 700;
-}
-
-/* --- Header & Nav --- */
-.lang-toggle-container {
-    text-align: right;
-    padding: 1rem;
-}
-.lang-toggle {
-    background: none;
-    border: 1px solid var(--border-color);
-    padding: 0.5rem 0.75rem;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 500;
-}
-.header-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: var(--card-bg);
-    padding: 1rem 2rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-.header-controls {
-    display: flex;
-    gap: 1rem;
-}
-
-/* --- Login Page --- */
-#login-page .container {
-    max-width: 450px;
-    margin-top: 4rem;
-}
-.input-group {
-    margin-bottom: 1.25rem;
-}
-.input-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-}
-.input-group input {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    font-size: 1rem;
-}
-.button-primary {
-    width: 100%;
-    padding: 0.85rem 1rem;
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #fff;
-    background-color: var(--primary-color);
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-.button-primary:hover {
-    background-color: var(--primary-hover);
-}
-.button-secondary {
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem;
-    color: var(--text-color);
-    background-color: var(--light-color);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-.button-secondary:hover {
-    background-color: #e2e6ea;
-}
-.error-message {
-    color: var(--danger-color);
-    margin-top: 1rem;
-    text-align: center;
-}
-
-/* --- Hub Page --- */
-.test-card {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.5rem;
-}
-.test-card-info h3 { margin-bottom: 0.5rem; }
-.test-meta {
-    display: flex;
-    gap: 1.5rem;
-    color: var(--secondary-color);
-}
-.test-card-action .button-primary { width: auto; }
-.test-card-action .button-secondary { width: auto; background-color: var(--success-color); color: white; border: none; }
-.test-card-action .button-primary:disabled {
-    background-color: var(--secondary-color);
-    cursor: not-allowed;
-}
-
-/* --- Test Page --- */
-.test-header {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-}
-#timer-container {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--primary-color);
-}
-#timer.low-time {
-    color: var(--danger-color);
-    animation: pulse 1s infinite;
-}
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
-}
-
-.question-box {
-    margin-bottom: 2rem;
-}
-.question-header {
-    font-size: 1.2rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-}
-.question-content {
-    font-size: 1.1rem;
-    margin-bottom: 1rem;
-}
-.hint-container {
-    margin: 1rem 0;
-}
-.hint-button {
-    font-size: 0.9rem;
-    background: none;
-    border: 1px solid var(--primary-color);
-    color: var(--primary-color);
-    padding: 0.25rem 0.75rem;
-    border-radius: 12px;
-    cursor: pointer;
-}
-
-/* [แก้ไข] สไตล์สำหรับ Hint กลับไปใช้ display: none */
-.hint-content {
-    background-color: #fffbe6;
-    border: 1px solid #ffe58f;
-    border-radius: 8px;
-    padding: 0.75rem 1rem;
-    margin-top: 0.5rem;
-    display: none; /* ซ่อนเริ่มต้น */
-    line-height: 1.9;
+    // Check if I18N_DB is loaded before using it
+    if (typeof I18N_DB !== 'undefined') {
+        document.querySelectorAll('[data-lang-key]').forEach(el => {
+            const key = el.dataset.langKey;
+            if (I18N_DB[lang] && I18N_DB[lang][key]) {
+                el.innerHTML = I18N_DB[lang][key];
+            }
+        });
+    } else {
+        console.error("I18N_DB not loaded yet!");
+    }
 }
 
 
-.answer-input {
-    width: 100%;
-    max-width: 300px;
-    padding: 0.5rem 0.75rem;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    font-size: 1rem;
-}
-.submit-button {
-    margin-top: 1rem;
-    font-size: 1.25rem;
-}
-
-/* สไตล์สำหรับ Placeholder คำตอบ */
-.answer-format-label {
-    display: block;
-    font-size: 0.85rem;
-    color: var(--secondary-color);
-    margin-bottom: 0.5rem;
-    font-weight: 400;
+function initLangToggle() {
+    const toggle = document.getElementById('lang-toggle');
+    if (toggle) {
+        toggle.addEventListener('click', () => {
+            const currentLang = localStorage.getItem('language') || 'th';
+            const newLang = currentLang === 'th' ? 'en' : 'th';
+            localStorage.setItem('language', newLang);
+            loadLanguage(); // Load text first
+            // Re-render dynamic content (which includes math rendering)
+            const bodyId = document.body.id;
+            if (bodyId === 'hub-page') renderHub();
+            if (bodyId === 'test-page') renderTest();
+            if (bodyId === 'results-page') renderResults();
+        });
+    }
 }
 
-/* --- Results Page --- */
-.score-card {
-    text-align: center;
-}
-.score-card h1 {
-    font-size: 3rem;
-    color: var(--primary-color);
-}
-.result-box {
-    margin-bottom: 1.5rem;
-}
-.result-header {
-    font-size: 1.2rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-}
-.result-status.correct { color: var(--success-color); }
-.result-status.incorrect { color: var(--danger-color); }
-.result-answer {
-    background-color: var(--light-color);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 0.75rem 1rem;
-    margin: 0.5rem 0;
-}
-.solution-box {
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px dashed var(--border-color);
+function getLang() {
+    return localStorage.getItem('language') || 'th';
 }
 
-/* --- Modal --- */
-.modal-backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.6);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-.modal-content {
-    background: white;
-    padding: 2rem;
-    border-radius: 12px;
-    text-align: center;
+function getI18n(key) {
+    const lang = getLang();
+    // Safely access keys only if I18N_DB is loaded
+    return (typeof I18N_DB !== 'undefined' && I18N_DB[lang] && I18N_DB[lang][key]) ? I18N_DB[lang][key] : key;
 }
 
-/* KaTeX */
-.katex { font-size: 1.1em; }
 
-/* สไตล์สำหรับ header ในหน้า Test */
-.header-controls.test-controls {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
+function getI18nContent(contentObject) {
+    const lang = getLang();
+     // Safely access keys only if TEST_DATA is loaded (used here)
+    return (typeof contentObject !== 'undefined' && contentObject[lang]) ? contentObject[lang] : (contentObject && contentObject['en']) || '';
 }
 
-/* สไตล์เพื่อให้อ่านง่ายขึ้น (แก้ wall of text) */
-.question-content,
-.hint-content, /* Apply to hint as well */
-.solution-box div {
-    line-height: 1.9; /* เพิ่มระยะห่างระหว่างบรรทัด */
+
+// --- KaTeX Auto-render ---
+function renderMath(element) {
+    // Ensure KaTeX library is loaded
+    if (window.renderMathInElement) {
+        try {
+            renderMathInElement(element, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false},
+                    {left: '\\(', right: '\\)', display: false},
+                    {left: '\\[', right: '\\]', display: true}
+                ],
+                throwOnError: false // Prevents script halting on minor errors
+            });
+        } catch (error) {
+            console.error("KaTeX rendering error:", error);
+        }
+    } else {
+        // Retry if KaTeX hasn't loaded (e.g., slow network)
+        console.warn("KaTeX library not loaded yet, retrying render...");
+        setTimeout(() => renderMath(element), 300); // Increased delay for retry
+    }
+}
+
+
+// --- Login Page (index.html) ---
+function initLogin() {
+    if (localStorage.getItem('loggedInUser')) {
+        window.location.href = 'hub.html';
+    }
+
+    const form = document.getElementById('login-form');
+    form.addEventListener('submit', e => {
+        e.preventDefault();
+        const user = document.getElementById('username').value;
+        const pass = document.getElementById('password').value;
+        const errorMsg = document.getElementById('login-error');
+
+        // Check USER_DB only after ensuring data.js is likely loaded
+        if (typeof USER_DB !== 'undefined' && USER_DB[user] && USER_DB[user] === pass) {
+            localStorage.setItem('loggedInUser', user);
+            localStorage.setItem('isUnlimited', (user === 'JJ'));
+            window.location.href = 'hub.html';
+        } else {
+             // Use getI18n safely
+            errorMsg.textContent = getI18n('login_error');
+        }
+    });
+     // Render math after DOM is ready for login page
+    renderMath(document.body);
+}
+
+// --- Hub Page (hub.html) ---
+function initHub() {
+    const user = checkAuth(); // Redirects if not logged in
+    document.getElementById('hub-username').textContent = user;
+    document.getElementById('logout-button').addEventListener('click', () => {
+        localStorage.clear();
+        window.location.href = 'index.html';
+    });
+    renderHub(); // Render dynamic content
+    renderMath(document.body); // Render math after content is added
+}
+
+function renderHub() {
+    // Ensure TEST_DATA is loaded
+     if (typeof TEST_DATA === 'undefined') {
+        console.error("TEST_DATA not loaded yet!");
+        return; // Stop if data isn't ready
+    }
+
+    const container = document.getElementById('test-list-container');
+    container.innerHTML = '';
+    const user = localStorage.getItem('loggedInUser');
+    const isUnlimited = localStorage.getItem('isUnlimited') === 'true';
+
+    Object.values(TEST_DATA).forEach(test => {
+        const testId = test.id;
+        const attemptKey = `attempt_${user}_${testId}`;
+        const hasAttempted = localStorage.getItem(attemptKey) === 'true';
+
+        let actionButton;
+        if (hasAttempted && !isUnlimited) {
+            actionButton = `
+                <button class="button-secondary" data-testid="${testId}" data-action="view">
+                    ${getI18n('view_results')} (${getI18n('attempt_used')})
+                </button>`;
+        } else {
+            actionButton = `
+                <button class="button-primary" data-testid="${testId}" data-action="start">
+                    ${getI18n('start_test')}
+                </button>`;
+        }
+
+        const card = `
+            <div class="card test-card">
+                <div class="test-card-info">
+                    <h3>${getI18nContent(test.title)}</h3>
+                    <div class="test-meta">
+                        <span>${test.meta.questions} ${getI18n('questions')}</span>
+                        <span>${test.meta.time} ${getI18n('minutes')}</span>
+                        <span>${getI18n('difficulty')}: ${getI18nContent(test.meta.difficulty)}</span>
+                    </div>
+                </div>
+                <div class="test-card-action">
+                    ${actionButton}
+                </div>
+            </div>
+        `;
+        container.innerHTML += card;
+    });
+
+    container.querySelectorAll('button').forEach(button => {
+        button.addEventListener('click', () => {
+            const testId = button.dataset.testid;
+            const action = button.dataset.action;
+            localStorage.setItem('currentTestId', testId);
+
+            if (action === 'start') {
+                startTest(testId, user);
+            } else if (action === 'view') {
+                window.location.href = 'results.html';
+            }
+        });
+    });
+}
+
+function startTest(testId, user) {
+    const isUnlimited = localStorage.getItem('isUnlimited') === 'true';
+    const attemptKey = `attempt_${user}_${testId}`;
+
+    if (!isUnlimited) {
+        localStorage.setItem(attemptKey, 'true');
+    }
+
+    localStorage.setItem(`testStartTime_${testId}`, Date.now());
+    localStorage.removeItem(`results_${user}_${testId}`);
+
+    window.location.href = 'test.html';
+}
+
+// --- Test Page (test.html) ---
+let timerInterval;
+function initTest() {
+    const user = checkAuth();
+    const testId = localStorage.getItem('currentTestId');
+    if (!testId || typeof TEST_DATA === 'undefined' || !TEST_DATA[testId]) {
+        window.location.href = 'hub.html'; // Go back if test data isn't ready or invalid ID
+        return;
+    }
+
+    const test = TEST_DATA[testId];
+    const startTimeKey = `testStartTime_${testId}`;
+    const startTime = localStorage.getItem(startTimeKey);
+
+    if (!startTime) {
+        window.location.href = 'hub.html';
+        return;
+    }
+
+    document.getElementById('test-title').textContent = getI18nContent(test.title);
+    renderTest(); // Render content (includes math rendering now)
+    startTimer(test.meta.time, startTime, testId, user);
+
+    document.getElementById('test-form').addEventListener('submit', e => {
+        e.preventDefault();
+        submitTest(testId, user, false);
+    });
+}
+
+function renderTest() {
+     // Ensure TEST_DATA is loaded
+     if (typeof TEST_DATA === 'undefined') {
+        console.error("TEST_DATA not loaded yet!");
+        return; // Stop if data isn't ready
+    }
+    const testId = localStorage.getItem('currentTestId');
+     if (!testId || !TEST_DATA[testId]) return; // Extra safety check
+    const test = TEST_DATA[testId];
+
+    const container = document.getElementById('question-container');
+    container.innerHTML = '';
+    const lang = getLang();
+
+    test.questions.forEach((q, index) => {
+        const qNum = index + 1;
+
+        const questionText = getI18nContent(q.q).replace(/\n/g, '<br>');
+        const hintTextDisplay = getI18nContent(q.hint).replace(/\n/g, '<br>');
+
+        const qBox = `
+            <div class="card question-box">
+                <div class="question-header">${getI18n('question')} ${qNum}</div>
+                <div class="question-content" id="q-content-${qNum}">
+                    ${questionText}
+                </div>
+                <div class="hint-container">
+                    <button type="button" class="hint-button" data-hint-target="hint-${qNum}">
+                        ${getI18n('hint')}
+                    </button>
+                    <div class="hint-content" id="hint-${qNum}" style="display: none;"> ${hintTextDisplay}
+                    </div>
+                </div>
+                <label for="q-ans-${qNum}" class="input-group-label">${getI18n('your_answer')}</label>
+                <label class="answer-format-label" for="q-ans-${qNum}">${getI18n('answer_format_placeholder')}</label>
+                <input type="text" id="q-ans-${qNum}" class="answer-input" name="q${qNum}">
+            </div>
+        `;
+        container.innerHTML += qBox;
+    });
+
+    // Render Math for questions specifically AFTER adding them to DOM
+    container.querySelectorAll('.question-content').forEach(el => renderMath(el));
+
+    // [แก้ไข] Hint Listener (Render on first click after display)
+    container.querySelectorAll('.hint-button').forEach(button => {
+        button.addEventListener('click', () => {
+            const targetId = button.dataset.hintTarget;
+            const hintContent = document.getElementById(targetId);
+            const isHidden = hintContent.style.display === 'none';
+
+            if (isHidden) {
+                hintContent.style.display = 'block';
+                // Only render math the first time it's shown
+                if (!hintContent.dataset.renderedMath) {
+                     // Use setTimeout 0 to ensure display:block is processed first
+                    setTimeout(() => {
+                        renderMath(hintContent);
+                        hintContent.dataset.renderedMath = 'true'; // Mark as rendered
+                    }, 0);
+                }
+            } else {
+                hintContent.style.display = 'none';
+            }
+        });
+    });
+}
+
+
+function startTimer(durationMinutes, startTime, testId, user) {
+    const timerEl = document.getElementById('timer');
+    const endTime = parseInt(startTime, 10) + durationMinutes * 60 * 1000;
+
+    // Clear previous timer if exists
+    if(timerInterval) clearInterval(timerInterval);
+
+    timerInterval = setInterval(() => {
+        const now = Date.now();
+        const timeLeft = endTime - now;
+
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            timerEl.textContent = '00:00:00';
+            timerEl.classList.add('low-time');
+             // Make sure modal is visible even if user switches tabs
+             document.getElementById('time-up-modal').style.display = 'flex';
+            submitTest(testId, user, true); // Auto-submit
+            return;
+        }
+
+        if (timeLeft < 5 * 60 * 1000 && !timerEl.classList.contains('low-time')) { // 5 mins left
+            timerEl.classList.add('low-time');
+        } else if (timeLeft >= 5 * 60 * 1000 && timerEl.classList.contains('low-time')) {
+             timerEl.classList.remove('low-time'); // Remove if time increases (unlikely but safe)
+        }
+
+
+        const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+        timerEl.textContent =
+            `${String(hours).padStart(2, '0')}:` +
+            `${String(minutes).padStart(2, '0')}:` +
+            `${String(seconds).padStart(2, '0')}`;
+
+    }, 1000);
+}
+
+function submitTest(testId, user, isAutoSubmit) {
+    if (timerInterval) clearInterval(timerInterval); // Stop timer immediately
+
+     // Ensure modal is visible if auto-submitting
+    if (isAutoSubmit) {
+        const modal = document.getElementById('time-up-modal');
+        if(modal) modal.style.display = 'flex';
+    }
+
+     // Ensure TEST_DATA is loaded
+     if (typeof TEST_DATA === 'undefined' || !TEST_DATA[testId]) {
+        console.error("TEST_DATA not available during submission.");
+        // Maybe redirect to hub with an error message?
+        window.location.href = 'hub.html';
+        return;
+    }
+    const test = TEST_DATA[testId];
+    let score = 0;
+    const userAnswers = [];
+    const correctStatus = [];
+
+    test.questions.forEach((q, index) => {
+        const input = document.getElementById(`q-ans-${index + 1}`);
+        const userAnswer = input ? input.value.trim() : "";
+        userAnswers.push(userAnswer);
+
+        // Ensure q.answer exists before comparing
+        const isCorrect = q.answer && (userAnswer === q.answer);
+        if (isCorrect) {
+            score++;
+        }
+        correctStatus.push(isCorrect);
+    });
+
+    const results = {
+        score: score,
+        userAnswers: userAnswers,
+        correctStatus: correctStatus
+    };
+
+    localStorage.setItem(`results_${user}_${testId}`, JSON.stringify(results));
+
+    // Redirect slightly faster
+    setTimeout(() => {
+        window.location.href = 'results.html';
+    }, isAutoSubmit ? 1500 : 0);
+}
+
+// --- Results Page (results.html) ---
+function initResults() {
+    const user = checkAuth();
+    const testId = localStorage.getItem('currentTestId');
+     if (!testId || typeof TEST_DATA === 'undefined' || !TEST_DATA[testId]) {
+        window.location.href = 'hub.html'; // Go back if test data isn't ready or invalid ID
+        return;
+    }
+
+
+    document.getElementById('back-to-hub').addEventListener('click', () => {
+        localStorage.removeItem('currentTestId');
+        window.location.href = 'hub.html';
+    });
+
+    renderResults(); // Render content
+}
+
+function renderResults() {
+     // Ensure TEST_DATA is loaded
+     if (typeof TEST_DATA === 'undefined') {
+        console.error("TEST_DATA not loaded yet for results!");
+        // Display an error or redirect
+        const container = document.getElementById('results-container');
+        if(container) container.innerHTML = '<p>Error loading test data.</p>';
+        return;
+    }
+    const user = localStorage.getItem('loggedInUser');
+    const testId = localStorage.getItem('currentTestId');
+     if (!testId || !TEST_DATA[testId]) { // Extra safety check
+         const container = document.getElementById('results-container');
+         if(container) container.innerHTML = '<p>Invalid test selected.</p>';
+         return;
+     }
+    const test = TEST_DATA[testId];
+
+
+    const resultsKey = `results_${user}_${testId}`;
+    const resultsData = localStorage.getItem(resultsKey);
+
+    document.getElementById('results-title').textContent = `${getI18n('results_for')} ${getI18nContent(test.title)}`;
+    const scoreDisplay = document.getElementById('score-display');
+    const noResultsMsg = document.getElementById('no-results-message');
+    const resultsContainer = document.getElementById('results-container');
+
+
+    if (!resultsData) {
+        if(scoreDisplay) scoreDisplay.textContent = `0 / ${test.meta.questions}`;
+        if(noResultsMsg) noResultsMsg.style.display = 'block';
+        if(resultsContainer) resultsContainer.innerHTML = ''; // Clear potentially old results
+        renderMath(document.body); // Render static math if any
+        return;
+    }
+
+    if(noResultsMsg) noResultsMsg.style.display = 'none';
+    const results = JSON.parse(resultsData);
+
+    if(scoreDisplay) scoreDisplay.textContent = `${results.score} / ${test.meta.questions}`;
+
+    if(!resultsContainer) return; // Stop if container doesn't exist
+    resultsContainer.innerHTML = ''; // Clear previous results
+    const lang = getLang();
+
+    test.questions.forEach((q, index) => {
+        const qNum = index + 1;
+        const userAnswer = results.userAnswers[index];
+        const isCorrect = results.correctStatus[index];
+        const statusText = isCorrect ? getI18n('correct_status') : getI18n('incorrect_status');
+        const statusClass = isCorrect ? 'correct' : 'incorrect';
+
+        const questionText = getI18nContent(q.q).replace(/\n/g, '<br>');
+        const solutionText = getI18nContent(q.solution).replace(/\n/g, '<br>');
+        const correctAnswer = q.answer || ''; // Handle if answer is missing
+
+        const resultBox = `
+            <div class="card result-box">
+                <div class="result-header">
+                    ${getI18n('question')} ${qNum}
+                    <span class="result-status ${statusClass}">(${statusText})</span>
+                </div>
+                <div class="question-content" id="res-q-${qNum}">
+                    ${questionText}
+                </div>
+
+                <div class="result-answer">
+                    <strong>${getI18n('your_answer')}</strong>
+                    <span class="${statusClass}">${userAnswer || '(No Answer)'}</span>
+                </div>
+
+                ${!isCorrect ? `
+                <div class="result-answer">
+                    <strong>${getI18n('correct_answer')}</strong>
+                    <span>${correctAnswer}</span>
+                </div>` : ''}
+
+                <div class="solution-box">
+                    <strong>${getI18n('solution')}</strong>
+                    <div id="sol-${qNum}">
+                        ${solutionText}
+                    </div>
+                </div>
+            </div>
+        `;
+        resultsContainer.innerHTML += resultBox;
+    });
+
+    // Render Math after generating all result boxes
+    renderMath(resultsContainer);
+}
+
+// --- Auth ---
+function checkAuth() {
+    const user = localStorage.getItem('loggedInUser');
+    if (!user) {
+        // Redirect to login only if not already on login page
+        if(document.body.id !== 'login-page') {
+             window.location.href = 'index.html';
+        }
+        return null;
+    }
+    return user;
 }
