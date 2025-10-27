@@ -74,7 +74,10 @@ function renderMath(element) {
             console.error("KaTeX rendering error:", error);
         }
     } else {
-        console.warn("KaTeX library not loaded yet.");
+        // If KaTeX is not loaded yet, wait and try again
+        // This might happen on slow connections
+        console.warn("KaTeX library not loaded yet, retrying...");
+        setTimeout(() => renderMath(element), 200);
     }
 }
 
@@ -100,7 +103,8 @@ function initLogin() {
             errorMsg.textContent = getI18n('login_error');
         }
     });
-    renderMath(document.body); // Render static math if any
+    // Ensure math renders if page directly loaded
+    renderMath(document.body);
 }
 
 // --- Hub Page (hub.html) ---
@@ -112,7 +116,8 @@ function initHub() {
         window.location.href = 'index.html';
     });
     renderHub();
-    renderMath(document.body); // Render static math if any
+     // Ensure math renders if page directly loaded
+    renderMath(document.body);
 }
 
 function renderHub() {
@@ -253,7 +258,7 @@ function renderTest() {
     // Render Math สำหรับคำถามก่อน
     container.querySelectorAll('.question-content').forEach(el => renderMath(el));
 
-    // [แก้ไข] Event Listener สำหรับ Hint (เวอร์ชัน 7 - Render ตอนกดครั้งแรก)
+    // [แก้ไข] Event Listener สำหรับ Hint (เวอร์ชัน 8 - display + setTimeout + rendered flag)
     container.querySelectorAll('.hint-button').forEach(button => {
         button.addEventListener('click', () => {
             const targetId = button.dataset.hintTarget;
@@ -263,10 +268,13 @@ function renderTest() {
             if (isHidden) {
                 // ทำให้มองเห็น
                 hintContent.style.display = 'block';
-                // ถ้ายังไม่เคย Render Math มาก่อน ให้ Render เฉพาะ Hint นี้
+                // ถ้ายังไม่เคย Render Math มาก่อน
                 if (!hintContent.dataset.rendered) {
-                    renderMath(hintContent);
-                    hintContent.dataset.rendered = 'true'; // Mark as rendered
+                     // หน่วงเวลาเล็กน้อย (100ms) แล้วค่อย Render Math
+                    setTimeout(() => {
+                        renderMath(hintContent);
+                        hintContent.dataset.rendered = 'true'; // Mark as rendered AFTER rendering
+                    }, 100); // Increased delay
                 }
             } else {
                 // ซ่อน
