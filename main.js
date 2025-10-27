@@ -212,7 +212,7 @@ function initTest() {
     const user = checkAuth();
     const testId = localStorage.getItem('currentTestId');
     if (!testId || typeof TEST_DATA === 'undefined' || !TEST_DATA[testId]) {
-        window.location.href = 'hub.html'; // Go back if test data isn't ready or invalid ID
+        window.location.href = 'hub.html';
         return;
     }
 
@@ -226,7 +226,7 @@ function initTest() {
     }
 
     document.getElementById('test-title').textContent = getI18nContent(test.title);
-    renderTest(); // Render content (includes math rendering now)
+    renderTest(); // Render content
     startTimer(test.meta.time, startTime, testId, user);
 
     document.getElementById('test-form').addEventListener('submit', e => {
@@ -236,13 +236,12 @@ function initTest() {
 }
 
 function renderTest() {
-     // Ensure TEST_DATA is loaded
      if (typeof TEST_DATA === 'undefined') {
         console.error("TEST_DATA not loaded yet!");
-        return; // Stop if data isn't ready
+        return;
     }
     const testId = localStorage.getItem('currentTestId');
-     if (!testId || !TEST_DATA[testId]) return; // Extra safety check
+     if (!testId || !TEST_DATA[testId]) return;
     const test = TEST_DATA[testId];
 
     const container = document.getElementById('question-container');
@@ -255,6 +254,7 @@ function renderTest() {
         const questionText = getI18nContent(q.q).replace(/\n/g, '<br>');
         const hintTextDisplay = getI18nContent(q.hint).replace(/\n/g, '<br>');
 
+        // ใช้ class 'hint-initially-hidden' เริ่มต้น
         const qBox = `
             <div class="card question-box">
                 <div class="question-header">${getI18n('question')} ${qNum}</div>
@@ -265,7 +265,7 @@ function renderTest() {
                     <button type="button" class="hint-button" data-hint-target="hint-${qNum}">
                         ${getI18n('hint')}
                     </button>
-                    <div class="hint-content" id="hint-${qNum}" style="display: none;"> ${hintTextDisplay}
+                    <div class="hint-content hint-initially-hidden" id="hint-${qNum}"> ${hintTextDisplay}
                     </div>
                 </div>
                 <label for="q-ans-${qNum}" class="input-group-label">${getI18n('your_answer')}</label>
@@ -276,33 +276,18 @@ function renderTest() {
         container.innerHTML += qBox;
     });
 
-    // Render Math for questions specifically AFTER adding them to DOM
-    container.querySelectorAll('.question-content').forEach(el => renderMath(el));
+    // Render Math ทั้งหมดหลังจากสร้าง HTML (รวม Hint ที่ซ่อนอยู่ด้วย class)
+    renderMath(container);
 
-    // [แก้ไข] Hint Listener (เวอร์ชัน 9 - display + force reflow + render first time)
+    // [แก้ไข] Event Listener สำหรับ Hint (เวอร์ชัน 10 - สลับ class 'hint-visible')
+    // วิธีนี้ Render Math แค่ครั้งเดียวตอนโหลดหน้า
     container.querySelectorAll('.hint-button').forEach(button => {
         button.addEventListener('click', () => {
             const targetId = button.dataset.hintTarget;
             const hintContent = document.getElementById(targetId);
-            const isHidden = hintContent.style.display === 'none';
-
-            if (isHidden) {
-                // ทำให้มองเห็น
-                hintContent.style.display = 'block';
-                // ถ้ายังไม่เคย Render Math มาก่อน
-                if (!hintContent.dataset.renderedMath) {
-                    // บังคับให้ browser คำนวณ layout ใหม่ (force reflow)
-                    // การอ่านค่า offsetHeight เป็นวิธีหนึ่งที่ทำได้
-                    void hintContent.offsetHeight; // This forces the browser to repaint
-
-                    // แล้วค่อย Render Math
-                    renderMath(hintContent);
-                    hintContent.dataset.renderedMath = 'true'; // Mark as rendered
-                }
-            } else {
-                // ซ่อน
-                hintContent.style.display = 'none';
-            }
+            // สลับ class 'hint-visible' แทน 'hint-initially-hidden'
+            hintContent.classList.toggle('hint-visible');
+            hintContent.classList.remove('hint-initially-hidden'); // เอา class เริ่มต้นออก
         });
     });
 }
@@ -312,7 +297,6 @@ function startTimer(durationMinutes, startTime, testId, user) {
     const timerEl = document.getElementById('timer');
     const endTime = parseInt(startTime, 10) + durationMinutes * 60 * 1000;
 
-    // Clear previous timer if exists
     if(timerInterval) clearInterval(timerInterval);
 
     timerInterval = setInterval(() => {
@@ -323,16 +307,15 @@ function startTimer(durationMinutes, startTime, testId, user) {
             clearInterval(timerInterval);
             timerEl.textContent = '00:00:00';
             timerEl.classList.add('low-time');
-             // Make sure modal is visible even if user switches tabs
              document.getElementById('time-up-modal').style.display = 'flex';
-            submitTest(testId, user, true); // Auto-submit
+            submitTest(testId, user, true);
             return;
         }
 
-        if (timeLeft < 5 * 60 * 1000 && !timerEl.classList.contains('low-time')) { // 5 mins left
+        if (timeLeft < 5 * 60 * 1000 && !timerEl.classList.contains('low-time')) {
             timerEl.classList.add('low-time');
         } else if (timeLeft >= 5 * 60 * 1000 && timerEl.classList.contains('low-time')) {
-             timerEl.classList.remove('low-time'); // Remove if time increases (unlikely but safe)
+             timerEl.classList.remove('low-time');
         }
 
 
@@ -349,18 +332,15 @@ function startTimer(durationMinutes, startTime, testId, user) {
 }
 
 function submitTest(testId, user, isAutoSubmit) {
-    if (timerInterval) clearInterval(timerInterval); // Stop timer immediately
+    if (timerInterval) clearInterval(timerInterval);
 
-     // Ensure modal is visible if auto-submitting
     if (isAutoSubmit) {
         const modal = document.getElementById('time-up-modal');
         if(modal) modal.style.display = 'flex';
     }
 
-     // Ensure TEST_DATA is loaded
      if (typeof TEST_DATA === 'undefined' || !TEST_DATA[testId]) {
         console.error("TEST_DATA not available during submission.");
-        // Maybe redirect to hub with an error message?
         window.location.href = 'hub.html';
         return;
     }
@@ -374,7 +354,6 @@ function submitTest(testId, user, isAutoSubmit) {
         const userAnswer = input ? input.value.trim() : "";
         userAnswers.push(userAnswer);
 
-        // Ensure q.answer exists before comparing
         const isCorrect = q.answer && (userAnswer === q.answer);
         if (isCorrect) {
             score++;
@@ -390,7 +369,6 @@ function submitTest(testId, user, isAutoSubmit) {
 
     localStorage.setItem(`results_${user}_${testId}`, JSON.stringify(results));
 
-    // Redirect slightly faster
     setTimeout(() => {
         window.location.href = 'results.html';
     }, isAutoSubmit ? 1500 : 0);
@@ -401,7 +379,7 @@ function initResults() {
     const user = checkAuth();
     const testId = localStorage.getItem('currentTestId');
      if (!testId || typeof TEST_DATA === 'undefined' || !TEST_DATA[testId]) {
-        window.location.href = 'hub.html'; // Go back if test data isn't ready or invalid ID
+        window.location.href = 'hub.html';
         return;
     }
 
@@ -415,21 +393,19 @@ function initResults() {
 }
 
 function renderResults() {
-     // Ensure TEST_DATA is loaded
      if (typeof TEST_DATA === 'undefined') {
         console.error("TEST_DATA not loaded yet for results!");
-        // Display an error or redirect
         const container = document.getElementById('results-container');
         if(container) container.innerHTML = '<p>Error loading test data.</p>';
-        renderMath(document.body); // Render static math if any
+        renderMath(document.body);
         return;
     }
     const user = localStorage.getItem('loggedInUser');
     const testId = localStorage.getItem('currentTestId');
-     if (!testId || !TEST_DATA[testId]) { // Extra safety check
+     if (!testId || !TEST_DATA[testId]) {
          const container = document.getElementById('results-container');
          if(container) container.innerHTML = '<p>Invalid test selected.</p>';
-         renderMath(document.body); // Render static math if any
+         renderMath(document.body);
          return;
      }
     const test = TEST_DATA[testId];
@@ -447,8 +423,8 @@ function renderResults() {
     if (!resultsData) {
         if(scoreDisplay) scoreDisplay.textContent = `0 / ${test.meta.questions}`;
         if(noResultsMsg) noResultsMsg.style.display = 'block';
-        if(resultsContainer) resultsContainer.innerHTML = ''; // Clear potentially old results
-        renderMath(document.body); // Render static math if any
+        if(resultsContainer) resultsContainer.innerHTML = '';
+        renderMath(document.body);
         return;
     }
 
@@ -457,8 +433,8 @@ function renderResults() {
 
     if(scoreDisplay) scoreDisplay.textContent = `${results.score} / ${test.meta.questions}`;
 
-    if(!resultsContainer) return; // Stop if container doesn't exist
-    resultsContainer.innerHTML = ''; // Clear previous results
+    if(!resultsContainer) return;
+    resultsContainer.innerHTML = '';
     const lang = getLang();
 
     test.questions.forEach((q, index) => {
@@ -470,7 +446,7 @@ function renderResults() {
 
         const questionText = getI18nContent(q.q).replace(/\n/g, '<br>');
         const solutionText = getI18nContent(q.solution).replace(/\n/g, '<br>');
-        const correctAnswer = q.answer || ''; // Handle if answer is missing
+        const correctAnswer = q.answer || '';
 
         const resultBox = `
             <div class="card result-box">
@@ -512,7 +488,6 @@ function renderResults() {
 function checkAuth() {
     const user = localStorage.getItem('loggedInUser');
     if (!user) {
-        // Redirect to login only if not already on login page
         if(document.body.id !== 'login-page') {
              window.location.href = 'index.html';
         }
