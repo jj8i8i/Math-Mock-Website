@@ -66,7 +66,7 @@ function getI18nContent(contentObject) {
 
 
 // --- KaTeX Auto-render ---
-function renderMath(element, callback) { // Added callback
+function renderMath(element) {
     // Ensure KaTeX library is loaded
     if (window.renderMathInElement) {
         try {
@@ -79,16 +79,14 @@ function renderMath(element, callback) { // Added callback
                 ],
                 throwOnError: false // Prevents script halting on minor errors
             });
-            console.log("KaTeX rendered for element:", element);
-            if (callback) callback(); // Execute callback after rendering
+            console.log("KaTeX rendered for element:", element); // Add log
         } catch (error) {
             console.error("KaTeX rendering error:", error);
-             if (callback) callback(); // Execute callback even if error occurs
         }
     } else {
         // Retry if KaTeX hasn't loaded (e.g., slow network)
         console.warn("KaTeX library not loaded yet, retrying render...");
-        setTimeout(() => renderMath(element, callback), 300); // Pass callback to retry
+        setTimeout(() => renderMath(element), 300); // Increased delay for retry
     }
 }
 
@@ -268,7 +266,7 @@ function renderTest() {
                     <button type="button" class="hint-button" data-hint-target="hint-${qNum}">
                         ${getI18n('hint')}
                     </button>
-                    <div class="hint-content" id="hint-${qNum}"> ${hintTextDisplay}
+                    <div class="hint-content" id="hint-${qNum}" style="display: none;"> ${hintTextDisplay}
                     </div>
                 </div>
                 <label for="q-ans-${qNum}" class="input-group-label">${getI18n('your_answer')}</label>
@@ -279,20 +277,29 @@ function renderTest() {
         container.innerHTML += qBox;
     });
 
-    // [แก้ไข] Render Math ทั้งหมด (รวม Hint) แล้วค่อยซ่อน Hint ทีหลัง
+    // [แก้ไข] Render Math ทั้งหมด (รวม Hint ที่ยังแสดงผลอยู่)
     renderMath(container, () => {
-        // This function runs AFTER KaTeX is done (or failed)
-        // Hide all hints initially using JS AFTER rendering
+        // Callback function: runs AFTER KaTeX rendering is done
+
+        // Hide hints using JavaScript AFTER rendering
         container.querySelectorAll('.hint-content').forEach(hintEl => {
-            hintEl.style.display = 'none';
+             // Check if it's already hidden, maybe from previous toggle
+             if (hintEl.style.display !== 'none') {
+                 hintEl.style.display = 'none';
+             }
         });
 
-        // Add hint button listeners AFTER hints are hidden
+        // Add hint button listeners AFTER hints are potentially hidden
         container.querySelectorAll('.hint-button').forEach(button => {
-            button.addEventListener('click', () => {
-                const targetId = button.dataset.hintTarget;
+            // Remove old listener if any to prevent duplicates
+            button.replaceWith(button.cloneNode(true));
+            // Get the new button reference
+            const newButton = container.querySelector(`[data-hint-target="${button.dataset.hintTarget}"]`);
+
+            newButton.addEventListener('click', () => {
+                const targetId = newButton.dataset.hintTarget;
                 const hintContent = document.getElementById(targetId);
-                // Just toggle display, math is already rendered
+                // Just toggle display, math is already rendered correctly
                 hintContent.style.display = hintContent.style.display === 'none' ? 'block' : 'none';
             });
         });
