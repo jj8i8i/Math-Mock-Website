@@ -201,7 +201,7 @@ h1, h2, h3 {
     border-radius: 8px;
     padding: 0.75rem 1rem;
     margin-top: 0.5rem;
-    transition: opacity 0.3s ease-in-out, max-height 0.3s ease-in-out, padding 0.3s ease-in-out, margin 0.3s ease-in-out, visibility 0s linear 0.3s; /* Delay visibility change */
+    transition: opacity 0.3s ease-in-out, max-height 0.3s ease-in-out, padding 0.3s ease-in-out, margin 0.3s ease-in-out, visibility 0s linear 0.3s; /* Delay visibility change when hiding */
     line-height: 1.9;
 
     /* Initially hidden state */
@@ -315,6 +315,3 @@ h1, h2, h3 {
 .solution-box div {
     line-height: 1.9; /* เพิ่มระยะห่างระหว่างบรรทัด */
 }
-
-/* [แก้ไข] ลบ rule เก่าสำหรับ .hint-content.hint-hidden ถ้ามี */
-/* .hint-content.hint-hidden { ... } */ /* <--- ลบบรรทัดนี้ (ถ้ามี) */
