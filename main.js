@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Global setup
     loadLanguage();
     initLangToggle();
-    // [แก้ไข] ไม่เรียก renderMath ทั่วไปตรงนี้
 
     // Page-specific setup
     const bodyId = document.body.id;
@@ -280,7 +279,7 @@ function renderTest() {
     // Render Math for questions specifically AFTER adding them to DOM
     container.querySelectorAll('.question-content').forEach(el => renderMath(el));
 
-    // [แก้ไข] Hint Listener (Render on first click after display)
+    // [แก้ไข] Hint Listener (เวอร์ชัน 9 - display + force reflow + render first time)
     container.querySelectorAll('.hint-button').forEach(button => {
         button.addEventListener('click', () => {
             const targetId = button.dataset.hintTarget;
@@ -288,16 +287,20 @@ function renderTest() {
             const isHidden = hintContent.style.display === 'none';
 
             if (isHidden) {
+                // ทำให้มองเห็น
                 hintContent.style.display = 'block';
-                // Only render math the first time it's shown
+                // ถ้ายังไม่เคย Render Math มาก่อน
                 if (!hintContent.dataset.renderedMath) {
-                     // Use setTimeout 0 to ensure display:block is processed first
-                    setTimeout(() => {
-                        renderMath(hintContent);
-                        hintContent.dataset.renderedMath = 'true'; // Mark as rendered
-                    }, 0);
+                    // บังคับให้ browser คำนวณ layout ใหม่ (force reflow)
+                    // การอ่านค่า offsetHeight เป็นวิธีหนึ่งที่ทำได้
+                    void hintContent.offsetHeight; // This forces the browser to repaint
+
+                    // แล้วค่อย Render Math
+                    renderMath(hintContent);
+                    hintContent.dataset.renderedMath = 'true'; // Mark as rendered
                 }
             } else {
+                // ซ่อน
                 hintContent.style.display = 'none';
             }
         });
@@ -418,6 +421,7 @@ function renderResults() {
         // Display an error or redirect
         const container = document.getElementById('results-container');
         if(container) container.innerHTML = '<p>Error loading test data.</p>';
+        renderMath(document.body); // Render static math if any
         return;
     }
     const user = localStorage.getItem('loggedInUser');
@@ -425,6 +429,7 @@ function renderResults() {
      if (!testId || !TEST_DATA[testId]) { // Extra safety check
          const container = document.getElementById('results-container');
          if(container) container.innerHTML = '<p>Invalid test selected.</p>';
+         renderMath(document.body); // Render static math if any
          return;
      }
     const test = TEST_DATA[testId];
