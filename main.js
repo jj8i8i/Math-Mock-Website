@@ -79,6 +79,7 @@ function renderMath(element) {
                 ],
                 throwOnError: false // Prevents script halting on minor errors
             });
+            console.log("KaTeX rendered for element:", element); // Add log
         } catch (error) {
             console.error("KaTeX rendering error:", error);
         }
@@ -265,7 +266,7 @@ function renderTest() {
                     <button type="button" class="hint-button" data-hint-target="hint-${qNum}">
                         ${getI18n('hint')}
                     </button>
-                    <div class="hint-content hint-initially-hidden" id="hint-${qNum}"> ${hintTextDisplay}
+                    <div class="hint-content" id="hint-${qNum}"> ${hintTextDisplay}
                     </div>
                 </div>
                 <label for="q-ans-${qNum}" class="input-group-label">${getI18n('your_answer')}</label>
@@ -276,18 +277,16 @@ function renderTest() {
         container.innerHTML += qBox;
     });
 
-    // Render Math ทั้งหมดหลังจากสร้าง HTML (รวม Hint ที่ซ่อนอยู่ด้วย class)
+    // [แก้ไข] Render Math ทั้งหมดหลังจากสร้าง HTML (รวม Hint)
     renderMath(container);
 
-    // [แก้ไข] Event Listener สำหรับ Hint (เวอร์ชัน 10 - สลับ class 'hint-visible')
-    // วิธีนี้ Render Math แค่ครั้งเดียวตอนโหลดหน้า
+    // [แก้ไข] Event Listener สำหรับ Hint (เวอร์ชัน 11 - สลับ class 'hint-visible' เท่านั้น)
     container.querySelectorAll('.hint-button').forEach(button => {
         button.addEventListener('click', () => {
             const targetId = button.dataset.hintTarget;
             const hintContent = document.getElementById(targetId);
-            // สลับ class 'hint-visible' แทน 'hint-initially-hidden'
+            // แค่สลับ class ไม่ต้องทำอะไรเพิ่ม
             hintContent.classList.toggle('hint-visible');
-            hintContent.classList.remove('hint-initially-hidden'); // เอา class เริ่มต้นออก
         });
     });
 }
