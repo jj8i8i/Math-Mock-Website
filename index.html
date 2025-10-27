@@ -1,34 +1,71 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mock Test Login</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+    <title>Math Mock Test</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" integrity="sha384-KiWOvVjnN8qwKMkOdPjKWPcSsXGTzqbPAORGFG8alUeJpqCShbMpCFJtwksS4GDH" crossorigin="anonymous">
+
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js" integrity="sha384-hIoBPJpTUs74ddyc4bGnC6lADKTrlKBWnS0CNuaLrMVaZbCIPx/EdpmyWWuCoLRT" crossorigin="anonymous"></script>
+
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/Gf1ESgOOsYIIaSCFKzNew6idKyuUi6bfeUNLdkUKrDGjXcuJ" crossorigin="anonymous"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false},
+                    {left: '\\[', right: '\\]', display: true},
+                    {left: '\\(', right: '\\)', display: false}
+                ]
+            });
+        });
+    </script>
+    
+    <style>
+        body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: auto; }
+        .question-box { border: 1px solid #eee; padding: 20px; margin-top: 20px; border-radius: 8px; }
+        .hint-box { background-color: #fffbeb; border: 1px solid #fde68a; padding: 15px; border-radius: 8px; margin-top: 15px; }
+        input[type="text"] { width: 100%; padding: 8px; margin-top: 10px; box-sizing: border-box; }
+        .header { display: flex; justify-content: space-between; align-items: center; }
+    </style>
+
 </head>
-<body id="login-page">
-    <div class="lang-toggle-container">
-        <button id="lang-toggle" class="lang-toggle">EN/TH</button>
-    </div>
-    <div class="container">
-        <div class="card">
-            <h1 data-lang-key="login_title">เข้าสู่ระบบ</h1>
-            <form id="login-form">
-                <div class="input-group">
-                    <label for="username" data-lang-key="username">ชื่อผู้ใช้</label>
-                    <input type="text" id="username" required>
-                </div>
-                <div class="input-group">
-                    <label for="password" data-lang-key="password">รหัสผ่าน</label>
-                    <input type="password" id="password" required>
-                </div>
-                <button type="submit" class="button-primary" data-lang-key="login_button">ล็อกอิน</button>
-                <p id="login-error" class="error-message"></p>
-            </form>
+<body>
+
+    <div class="header">
+        <div>
+            <h2>Algebra Set 1</h2>
+        </div>
+        <div>
+            <strong>Time Left:</strong> 01:29:39
         </div>
     </div>
-    <script src="data.js"></script>
-    <script src="main.js"></script>
+
+    <div class="question-box">
+        <p>... $P(x) = x^4 - ... = 0$. Find the value of $(\alpha^2 - 3)(\beta^2 - 3)(\gamma^2 - 3)(\delta^2 - 3)$</p>
+
+        <button>Hint</button>
+
+        <div class="hint-box">
+            We have $P(x) = (x - \alpha)(x - \beta)(x - \gamma)(x - \delta)$
+            <br>
+            Try factoring $\alpha^2 - 3 = (\alpha - \sqrt{3})(\alpha + \sqrt{3})$ and regroup the product.
+        </div>
+        <form>
+            <label for="answer">Your Answer:</label>
+            <p style="font-size: 0.9em; color: #666;">(Enter your answer (e.g., 3, 3/2, No such polynomial)</p>
+            <input type="text" id="answer" name="answer">
+        </form>
+    </div>
+
+
+    <div class="question-box">
+        <h3>Question 9</h3>
+        <p>Find the largest integer $n \le 2025$ such that $n$ can be written in the form $a^3 + b^3 + c^3 - 3abc$ for some ...</p>
+    </div>
+
 </body>
 </html>
