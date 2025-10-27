@@ -66,7 +66,7 @@ function getI18nContent(contentObject) {
 
 
 // --- KaTeX Auto-render ---
-function renderMath(element) {
+function renderMath(element, callback) { // Added callback
     // Ensure KaTeX library is loaded
     if (window.renderMathInElement) {
         try {
@@ -79,14 +79,16 @@ function renderMath(element) {
                 ],
                 throwOnError: false // Prevents script halting on minor errors
             });
-            console.log("KaTeX rendered for element:", element); // Add log
+            console.log("KaTeX rendered for element:", element);
+            if (callback) callback(); // Execute callback after rendering
         } catch (error) {
             console.error("KaTeX rendering error:", error);
+             if (callback) callback(); // Execute callback even if error occurs
         }
     } else {
         // Retry if KaTeX hasn't loaded (e.g., slow network)
         console.warn("KaTeX library not loaded yet, retrying render...");
-        setTimeout(() => renderMath(element), 300); // Increased delay for retry
+        setTimeout(() => renderMath(element, callback), 300); // Pass callback to retry
     }
 }
 
@@ -255,7 +257,7 @@ function renderTest() {
         const questionText = getI18nContent(q.q).replace(/\n/g, '<br>');
         const hintTextDisplay = getI18nContent(q.hint).replace(/\n/g, '<br>');
 
-        // ใช้ class 'hint-initially-hidden' เริ่มต้น
+        // [แก้ไข] ไม่ใส่ style="display: none;" ที่นี่
         const qBox = `
             <div class="card question-box">
                 <div class="question-header">${getI18n('question')} ${qNum}</div>
@@ -277,16 +279,22 @@ function renderTest() {
         container.innerHTML += qBox;
     });
 
-    // [แก้ไข] Render Math ทั้งหมดหลังจากสร้าง HTML (รวม Hint)
-    renderMath(container);
+    // [แก้ไข] Render Math ทั้งหมด (รวม Hint) แล้วค่อยซ่อน Hint ทีหลัง
+    renderMath(container, () => {
+        // This function runs AFTER KaTeX is done (or failed)
+        // Hide all hints initially using JS AFTER rendering
+        container.querySelectorAll('.hint-content').forEach(hintEl => {
+            hintEl.style.display = 'none';
+        });
 
-    // [แก้ไข] Event Listener สำหรับ Hint (เวอร์ชัน 11 - สลับ class 'hint-visible' เท่านั้น)
-    container.querySelectorAll('.hint-button').forEach(button => {
-        button.addEventListener('click', () => {
-            const targetId = button.dataset.hintTarget;
-            const hintContent = document.getElementById(targetId);
-            // แค่สลับ class ไม่ต้องทำอะไรเพิ่ม
-            hintContent.classList.toggle('hint-visible');
+        // Add hint button listeners AFTER hints are hidden
+        container.querySelectorAll('.hint-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const targetId = button.dataset.hintTarget;
+                const hintContent = document.getElementById(targetId);
+                // Just toggle display, math is already rendered
+                hintContent.style.display = hintContent.style.display === 'none' ? 'block' : 'none';
+            });
         });
     });
 }
