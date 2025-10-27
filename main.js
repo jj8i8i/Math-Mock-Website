@@ -255,7 +255,7 @@ function renderTest() {
         const questionText = getI18nContent(q.q).replace(/\n/g, '<br>');
         const hintTextDisplay = getI18nContent(q.hint).replace(/\n/g, '<br>');
 
-        // [แก้ไข] ไม่ใส่ style="display: none;" ที่นี่
+        // ใช้ style="display: none;" เริ่มต้น
         const qBox = `
             <div class="card question-box">
                 <div class="question-header">${getI18n('question')} ${qNum}</div>
@@ -277,31 +277,32 @@ function renderTest() {
         container.innerHTML += qBox;
     });
 
-    // [แก้ไข] Render Math ทั้งหมด (รวม Hint ที่ยังแสดงผลอยู่)
-    renderMath(container, () => {
-        // Callback function: runs AFTER KaTeX rendering is done
+    // Render Math เฉพาะคำถามก่อน
+    container.querySelectorAll('.question-content').forEach(el => renderMath(el));
 
-        // Hide hints using JavaScript AFTER rendering
-        container.querySelectorAll('.hint-content').forEach(hintEl => {
-             // Check if it's already hidden, maybe from previous toggle
-             if (hintEl.style.display !== 'none') {
-                 hintEl.style.display = 'none';
-             }
-        });
+    // [แก้ไข] Event Listener สำหรับ Hint (เวอร์ชัน 12 - Render on first click)
+    container.querySelectorAll('.hint-button').forEach(button => {
+         // Clear previous listener just in case
+        const newButton = button.cloneNode(true);
+        button.parentNode.replaceChild(newButton, button);
 
-        // Add hint button listeners AFTER hints are potentially hidden
-        container.querySelectorAll('.hint-button').forEach(button => {
-            // Remove old listener if any to prevent duplicates
-            button.replaceWith(button.cloneNode(true));
-            // Get the new button reference
-            const newButton = container.querySelector(`[data-hint-target="${button.dataset.hintTarget}"]`);
+        newButton.addEventListener('click', () => {
+            const targetId = newButton.dataset.hintTarget;
+            const hintContent = document.getElementById(targetId);
+            const isHidden = hintContent.style.display === 'none';
 
-            newButton.addEventListener('click', () => {
-                const targetId = newButton.dataset.hintTarget;
-                const hintContent = document.getElementById(targetId);
-                // Just toggle display, math is already rendered correctly
-                hintContent.style.display = hintContent.style.display === 'none' ? 'block' : 'none';
-            });
+            if (isHidden) {
+                // ทำให้มองเห็น
+                hintContent.style.display = 'block';
+                // ถ้ายังไม่เคย Render Math
+                if (!hintContent.dataset.renderedMath) {
+                    renderMath(hintContent);
+                    hintContent.dataset.renderedMath = 'true'; // Mark as rendered
+                }
+            } else {
+                // ซ่อน
+                hintContent.style.display = 'none';
+            }
         });
     });
 }
