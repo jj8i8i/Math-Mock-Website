@@ -48,7 +48,6 @@ h1, h2, h3 {
     font-weight: 700;
 }
 
-/* --- Header & Nav --- */
 .lang-toggle-container {
     text-align: right;
     padding: 1rem;
@@ -74,7 +73,6 @@ h1, h2, h3 {
     gap: 1rem;
 }
 
-/* --- Login Page --- */
 #login-page .container {
     max-width: 450px;
     margin-top: 4rem;
@@ -128,7 +126,6 @@ h1, h2, h3 {
     text-align: center;
 }
 
-/* --- Hub Page --- */
 .test-card {
     display: flex;
     justify-content: space-between;
@@ -148,7 +145,6 @@ h1, h2, h3 {
     cursor: not-allowed;
 }
 
-/* --- Test Page --- */
 .test-header {
     position: sticky;
     top: 0;
@@ -194,7 +190,6 @@ h1, h2, h3 {
     cursor: pointer;
 }
 
-/* สไตล์สำหรับ Hint (ไม่ต้องซ่อนด้วย CSS) */
 .hint-content {
     background-color: #fffbe6;
     border: 1px solid #ffe58f;
@@ -202,7 +197,7 @@ h1, h2, h3 {
     padding: 0.75rem 1rem;
     margin-top: 0.5rem;
     line-height: 1.9;
-    /* JavaScript will handle display: none / display: block */
+    /* display: none; will be controlled by JS */
 }
 
 
@@ -219,7 +214,6 @@ h1, h2, h3 {
     font-size: 1.25rem;
 }
 
-/* สไตล์สำหรับ Placeholder คำตอบ */
 .answer-format-label {
     display: block;
     font-size: 0.85rem;
@@ -228,7 +222,6 @@ h1, h2, h3 {
     font-weight: 400;
 }
 
-/* --- Results Page --- */
 .score-card {
     text-align: center;
 }
@@ -259,7 +252,6 @@ h1, h2, h3 {
     border-top: 1px dashed var(--border-color);
 }
 
-/* --- Modal --- */
 .modal-backdrop {
     position: fixed;
     top: 0;
@@ -279,19 +271,16 @@ h1, h2, h3 {
     text-align: center;
 }
 
-/* KaTeX */
 .katex { font-size: 1.1em; }
 
-/* สไตล์สำหรับ header ในหน้า Test */
 .header-controls.test-controls {
     display: flex;
     align-items: center;
     gap: 1.5rem;
 }
 
-/* สไตล์เพื่อให้อ่านง่ายขึ้น (แก้ wall of text) */
 .question-content,
-.hint-content, /* Apply to hint as well */
+.hint-content,
 .solution-box div {
-    line-height: 1.9; /* เพิ่มระยะห่างระหว่างบรรทัด */
+    line-height: 1.9;
 }
